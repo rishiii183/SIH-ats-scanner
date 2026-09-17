@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FileText, CheckCircle2, Search, AlertCircle } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, Search, AlertCircle, PlusCircle, HelpCircle } from 'lucide-react';
+import { AccordionApp } from '@/components/card-split-accordian';
 
 interface ProblemStatement {
   id: string;
@@ -20,6 +21,8 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
   const [problemStatements, setProblemStatements] = useState<ProblemStatement[]>([]);
   const [selectedPsId, setSelectedPsId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isCustomPs, setIsCustomPs] = useState<boolean>(false);
+  const [customPsText, setCustomPsText] = useState<string>('');
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
@@ -82,13 +85,15 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
     }
   };
 
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
       setErrorMsg('Please select a presentation file to scan.');
       return;
     }
-    onStartUpload(file, selectedPsId);
+    onStartUpload(file, isCustomPs ? 'CUSTOM' : selectedPsId);
   };
 
   const filteredPs = problemStatements.filter(
@@ -99,17 +104,13 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-8 p-6 sm:p-8 rounded-2xl glass-panel border border-slate-800 shadow-2xl relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div className="absolute -top-24 -left-24 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="w-full max-w-4xl mx-auto my-8 p-6 sm:p-8 rounded-2xl bg-white border border-slate-200 shadow-xl relative overflow-hidden">
       <div className="relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-            Check Your SIH Deck <span className="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">Before Submitting</span>
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
+            Check Your SIH Deck <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">Before Submitting</span>
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-slate-500 text-sm sm:text-base max-w-2xl mx-auto">
             Get an instant, line-by-line ATS score against the official SIH 2026 rubric (max 6 slides, technical depth, section structure).
           </p>
         </div>
@@ -117,40 +118,92 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Step 1: Problem Statement Selector */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              1. Select Problem Statement
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
+                1. Select Official Problem Statement ({problemStatements.length} Available)
+              </label>
+              <span className="text-[11px] text-orange-500 font-medium">Updated for SIH 2026</span>
+            </div>
+
             <div className="relative">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="text"
-                placeholder="Search PS ID or Title (e.g. SIH26101)..."
+                placeholder="Search PS ID or Title (e.g. SIH26101, MedTech, Smart Cities)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors shadow-sm"
               />
             </div>
-            
-            <select
-              value={selectedPsId}
-              onChange={(e) => setSelectedPsId(e.target.value)}
-              className="w-full py-2.5 px-3 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
-            >
-              {filteredPs.length > 0 ? (
-                filteredPs.map((ps) => (
-                  <option key={ps.id} value={ps.id}>
-                    [{ps.ps_id}] {ps.title} ({ps.theme})
-                  </option>
-                ))
-              ) : (
-                <option value="">General Track / Custom Problem Statement</option>
+
+            <div className="w-full max-h-64 overflow-y-auto bg-slate-50 border border-slate-200 rounded-xl space-y-1 p-2">
+              <div
+                onClick={() => {
+                  setIsCustomPs(true);
+                  setSelectedPsId('CUSTOM');
+                }}
+                className={`p-3 rounded-lg cursor-pointer text-sm transition-colors border ${selectedPsId === 'CUSTOM'
+                    ? 'bg-orange-50 border-orange-200'
+                    : 'border-transparent hover:bg-slate-100'
+                  }`}
+              >
+                <div className="font-semibold text-orange-600 flex items-center gap-2">
+                  <PlusCircle className="w-4 h-4" />
+                  + Paste Custom / College Problem Statement
+                </div>
+              </div>
+
+              {filteredPs.map((ps) => (
+                <div
+                  key={ps.id}
+                  onClick={() => {
+                    setIsCustomPs(false);
+                    setSelectedPsId(ps.id);
+                  }}
+                  className={`p-3 rounded-lg cursor-pointer transition-colors border ${selectedPsId === ps.id
+                      ? 'bg-orange-50 border-orange-200'
+                      : 'border-transparent hover:bg-slate-100'
+                    }`}
+                >
+                  <div className="font-semibold text-slate-800 text-sm">
+                    <span className="text-orange-500 mr-2">[{ps.ps_id}]</span>
+                    {ps.title}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-2">
+                    <span className="bg-white px-2.5 py-0.5 rounded-full border border-slate-200">{ps.theme}</span>
+                    <span className="bg-white px-2.5 py-0.5 rounded-full border border-slate-200 uppercase">{ps.category}</span>
+                  </div>
+                </div>
+              ))}
+
+              {filteredPs.length === 0 && (
+                <div className="p-4 text-center text-sm text-slate-500">
+                  No problem statements found matching your search.
+                </div>
               )}
-            </select>
+            </div>
+
+            {/* Custom PS Input Box if Custom selected */}
+            {isCustomPs && (
+              <div className="p-4 rounded-xl bg-orange-50 border border-orange-100 space-y-2 animate-in fade-in">
+                <div className="flex items-center gap-1.5 text-xs text-orange-600 font-semibold">
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Custom / Local Problem Statement Details</span>
+                </div>
+                <textarea
+                  rows={3}
+                  placeholder="Paste your custom problem statement title & description here..."
+                  value={customPsText}
+                  onChange={(e) => setCustomPsText(e.target.value)}
+                  className="w-full p-2.5 bg-white border border-slate-200 shadow-sm rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                />
+              </div>
+            )}
           </div>
 
           {/* Step 2: File Upload Dropzone */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
               2. Upload Presentation (.pptx or .pdf)
             </label>
             <div
@@ -158,13 +211,12 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer relative ${
-                dragActive
-                  ? 'border-indigo-500 bg-indigo-500/10 scale-[1.01]'
+              className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer relative ${dragActive
+                  ? 'border-orange-500 bg-orange-50 scale-[1.01]'
                   : file
-                  ? 'border-emerald-500/50 bg-emerald-500/5'
-                  : 'border-slate-700 hover:border-slate-500 bg-slate-900/50'
-              }`}
+                    ? 'border-emerald-500 bg-emerald-50'
+                    : 'border-slate-300 hover:border-slate-400 bg-slate-50'
+                }`}
             >
               <input
                 type="file"
@@ -175,22 +227,22 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
 
               {file ? (
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-1">
+                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-1">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <p className="font-semibold text-slate-100 text-sm">{file.name}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="font-semibold text-slate-800 text-sm">{file.name}</p>
+                  <p className="text-xs text-slate-500">
                     {(file.size / (1024 * 1024)).toFixed(2)} MB • Ready to Scan
                   </p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                  <div className="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-500 border border-orange-200">
                     <UploadCloud className="w-7 h-7" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-200">
-                      Drag & drop your presentation here, or <span className="text-indigo-400 underline">browse</span>
+                    <p className="text-sm font-medium text-slate-700">
+                      Drag & drop your presentation here, or <span className="text-orange-600 underline">browse</span>
                     </p>
                     <p className="text-xs text-slate-500 mt-1">Supports PPTX and PDF files up to 25MB (Max 6 slides recommended)</p>
                   </div>
@@ -200,7 +252,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400 flex items-center gap-2">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -210,16 +262,26 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
           <button
             type="submit"
             disabled={!file}
-            className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white shadow-xl transition-all flex items-center justify-center gap-2 ${
-              file
-                ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-emerald-500 hover:opacity-95 shadow-indigo-500/25 cursor-pointer'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-            }`}
+            className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm shadow-xl transition-all flex items-center justify-center gap-2 ${file
+                ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/20 cursor-pointer'
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none'
+              }`}
           >
             <FileText className="w-4 h-4" />
             <span>Scan & Evaluate Deck Against SIH Rubric</span>
           </button>
         </form>
+
+        <div className="mt-12 border-t border-slate-200 pt-8">
+          <h3 className="text-center text-sm font-semibold text-slate-500 mb-4 uppercase tracking-widest flex items-center justify-center gap-2">
+            <HelpCircle className="w-4 h-4" /> FAQ & Guidelines
+          </h3>
+          <AccordionApp items={[
+            { id: 1, title: 'What is SIH ATS Scanner?', icon: <Search className="w-5 h-5 text-orange-500" />, content: 'A Smart India Hackathon specialized tool to evaluate your presentation deck against the official judging criteria.' },
+            { id: 2, title: 'How does scoring work?', icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />, content: 'Scores are generated by an AI analyzing Clarity, Innovation, Technical Feasibility, and Impact based on the SIH 2026 rubric.' },
+            { id: 3, title: 'What format should I upload?', icon: <FileText className="w-5 h-5 text-blue-500" />, content: 'PDF and PPTX formats are supported. We recommend keeping it strictly under 6 slides to match SIH rules.' }
+          ]} />
+        </div>
       </div>
     </div>
   );

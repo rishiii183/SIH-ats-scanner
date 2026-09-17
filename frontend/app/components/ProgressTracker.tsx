@@ -17,20 +17,20 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ stepMessage, p
   ];
 
   return (
-    <div className="w-full max-w-2xl mx-auto my-12 p-8 rounded-2xl glass-panel border border-slate-800 shadow-2xl text-center space-y-6">
-      <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto text-indigo-400">
+    <div className="w-full max-w-2xl mx-auto my-12 p-8 rounded-2xl bg-white border border-slate-200 shadow-xl text-center space-y-6">
+      <div className="w-16 h-16 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center mx-auto text-orange-500">
         <Loader2 className="w-8 h-8 animate-spin" />
       </div>
 
       <div>
-        <h3 className="text-xl font-bold text-white mb-1">Scanning Deck Against Official Rubric</h3>
-        <p className="text-xs text-slate-400">{stepMessage}</p>
+        <h3 className="text-xl font-bold text-slate-800 mb-1">Scanning Deck Against Official Rubric</h3>
+        <p className="text-xs text-slate-500">{stepMessage}</p>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+      <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-200 shadow-inner">
         <div
-          className="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500"
+          className="bg-gradient-to-r from-orange-500 to-orange-400 h-full rounded-full transition-all duration-500 shadow-sm"
           style={{ width: `${progressPct}%` }}
         />
       </div>
@@ -45,17 +45,17 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ stepMessage, p
           return (
             <div
               key={idx}
-              className={`p-3 rounded-xl border text-xs flex flex-col gap-2 transition-all ${
+              className={`p-3 rounded-xl border text-xs flex flex-col gap-2 transition-all shadow-sm ${
                 isDone
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
                   : isCurrent
-                  ? 'bg-indigo-500/10 border-indigo-500/40 text-indigo-200 animate-pulse'
-                  : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                  ? 'bg-orange-50 border-orange-300 text-orange-700 animate-pulse'
+                  : 'bg-white border-slate-200 text-slate-500'
               }`}
             >
               <div className="flex items-center justify-between">
                 <Icon className="w-4 h-4" />
-                {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : null}
+                {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : null}
               </div>
               <span className="font-medium text-[11px] leading-tight">{stage.label}</span>
             </div>

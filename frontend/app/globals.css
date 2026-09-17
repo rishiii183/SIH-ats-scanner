@@ -1,40 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+}
+
+html {
+  background-color: #FDFBF7 !important;
 }
 
 body {
-  background-color: #080b11;
-  color: #f1f5f9;
+  background-color: #FDFBF7 !important;
+  color: #1E293B;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
 
 /* Glassmorphism utilities */
 .glass-panel {
-  background: rgba(18, 24, 38, 0.7);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.glow-primary {
-  box-shadow: 0 0 35px -5px rgba(99, 102, 241, 0.3);
-}
-
-.glow-accent {
-  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Custom Scrollbar */
@@ -42,12 +40,82 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080b11;
+  background: #FDFBF7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94A3B8;
+}
+
+/* Print Styles for PDF Export */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  header,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .glass-panel {
+    background: #FFFFFF !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: var(--font-sans);
+  }
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+  .dark {
+    /* removed dark variables */
+  }
+  html {
+    @apply font-sans;
+  }
 }

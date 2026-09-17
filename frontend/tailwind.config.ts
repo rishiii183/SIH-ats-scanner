@@ -8,20 +8,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0a0d14",
-        surface: "#121824",
-        "surface-border": "#1e293b",
-        primary: "#6366f1",
-        "primary-hover": "#4f46e5",
-        accent: "#10b981",
+        background: "#FDFBF7",
+        surface: "#FFFFFF",
+        "surface-border": "#E5E0D8",
+        primary: "#F97316",
+        "primary-hover": "#EA580C",
+        accent: "#F97316",
         warning: "#f59e0b",
         danger: "#ef4444",
+        border: "var(--border)",
+        ring: "var(--ring)",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        shimmer: 'shimmer 1.5s infinite',
+      },
+      keyframes: {
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
       }
     },
   },

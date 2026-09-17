@@ -107,15 +107,15 @@ export default function Home() {
         )}
 
         {status === 'failed' && (
-          <div className="w-full max-w-lg mx-auto my-12 p-8 rounded-2xl glass-panel border border-red-500/30 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto font-bold text-xl">
+          <div className="w-full max-w-lg mx-auto my-12 p-8 rounded-2xl bg-white shadow-xl border border-red-200 text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto font-bold text-xl">
               !
             </div>
-            <h3 className="text-lg font-bold text-white">Scan Failed</h3>
-            <p className="text-xs text-slate-400">{errorMsg}</p>
+            <h3 className="text-lg font-bold text-slate-900">Scan Failed</h3>
+            <p className="text-xs text-slate-500">{errorMsg}</p>
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 shadow-sm"
             >
               Try Again
             </button>
