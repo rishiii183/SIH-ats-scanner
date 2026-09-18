@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { UploadCloud, FileText, CheckCircle2, Search, AlertCircle, PlusCircle, HelpCircle } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle2, Search, AlertCircle, PlusCircle, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { AccordionApp } from '@/components/card-split-accordian';
 
 interface ProblemStatement {
@@ -25,6 +25,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
   const [customPsText, setCustomPsText] = useState<string>('');
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
   useEffect(() => {
     // Fetch problem statements from API
@@ -126,59 +127,82 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
             </div>
 
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="text"
-                placeholder="Search PS ID or Title (e.g. SIH26101, MedTech, Smart Cities)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors shadow-sm"
-              />
-            </div>
-
-            <div className="w-full max-h-64 overflow-y-auto bg-slate-50 border border-slate-200 rounded-xl space-y-1 p-2">
-              <div
-                onClick={() => {
-                  setIsCustomPs(true);
-                  setSelectedPsId('CUSTOM');
-                }}
-                className={`p-3 rounded-lg cursor-pointer text-sm transition-colors border ${selectedPsId === 'CUSTOM'
-                    ? 'bg-orange-50 border-orange-200'
-                    : 'border-transparent hover:bg-slate-100'
-                  }`}
+              <button
+                type="button"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full flex items-center justify-between pl-4 pr-4 py-3 bg-white/70 backdrop-blur-md border border-white/80 rounded-xl text-sm text-slate-800 shadow-sm hover:bg-white transition-all focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 text-left"
               >
-                <div className="font-semibold text-orange-600 flex items-center gap-2">
-                  <PlusCircle className="w-4 h-4" />
-                  + Paste Custom / College Problem Statement
-                </div>
-              </div>
+                <span className="truncate pr-4 font-semibold text-slate-700">
+                  {isCustomPs 
+                    ? 'Custom / College Problem Statement' 
+                    : (problemStatements.find(ps => ps.id === selectedPsId)?.title || 'Select a Problem Statement...')}
+                </span>
+                {isDropdownOpen ? <ChevronUp className="w-5 h-5 text-slate-400 shrink-0" /> : <ChevronDown className="w-5 h-5 text-slate-400 shrink-0" />}
+              </button>
 
-              {filteredPs.map((ps) => (
-                <div
-                  key={ps.id}
-                  onClick={() => {
-                    setIsCustomPs(false);
-                    setSelectedPsId(ps.id);
-                  }}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors border ${selectedPsId === ps.id
-                      ? 'bg-orange-50 border-orange-200'
-                      : 'border-transparent hover:bg-slate-100'
-                    }`}
-                >
-                  <div className="font-semibold text-slate-800 text-sm">
-                    <span className="text-orange-500 mr-2">[{ps.ps_id}]</span>
-                    {ps.title}
+              {isDropdownOpen && (
+                <div className="absolute z-50 w-full mt-2 bg-white/70 backdrop-blur-3xl border border-white/80 shadow-[0_20px_60px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-3 border-b border-white/40 bg-white/40">
+                    <div className="relative">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                      <input
+                        type="text"
+                        placeholder="Search PS ID or Title..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20 transition-all shadow-sm"
+                      />
+                    </div>
                   </div>
-                  <div className="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-2">
-                    <span className="bg-white px-2.5 py-0.5 rounded-full border border-slate-200">{ps.theme}</span>
-                    <span className="bg-white px-2.5 py-0.5 rounded-full border border-slate-200 uppercase">{ps.category}</span>
-                  </div>
-                </div>
-              ))}
 
-              {filteredPs.length === 0 && (
-                <div className="p-4 text-center text-sm text-slate-500">
-                  No problem statements found matching your search.
+                  <div className="w-full max-h-72 overflow-y-auto space-y-1 p-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-300/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+                    <div
+                      onClick={() => {
+                        setIsCustomPs(true);
+                        setSelectedPsId('CUSTOM');
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`p-3 rounded-xl cursor-pointer text-sm transition-all duration-200 border ${selectedPsId === 'CUSTOM'
+                          ? 'bg-gradient-to-r from-orange-50 to-orange-100/40 border-orange-200 shadow-sm'
+                          : 'border-transparent hover:bg-white/80 hover:shadow-sm hover:-translate-y-0.5'
+                        }`}
+                    >
+                      <div className="font-semibold text-orange-600 flex items-center gap-2">
+                        <PlusCircle className="w-4 h-4" />
+                        + Paste Custom / College Problem Statement
+                      </div>
+                    </div>
+
+                    {filteredPs.map((ps) => (
+                      <div
+                        key={ps.id}
+                        onClick={() => {
+                          setIsCustomPs(false);
+                          setSelectedPsId(ps.id);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`p-3 rounded-xl cursor-pointer transition-all duration-200 border ${selectedPsId === ps.id
+                            ? 'bg-gradient-to-r from-orange-50 to-orange-100/40 border-orange-200 shadow-sm'
+                            : 'border-transparent bg-transparent hover:bg-white/80 hover:shadow-sm hover:-translate-y-0.5'
+                          }`}
+                      >
+                        <div className="font-semibold text-slate-800 text-sm">
+                          <span className="text-orange-500 mr-2">[{ps.ps_id}]</span>
+                          {ps.title}
+                        </div>
+                        <div className="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-2">
+                          <span className="bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-slate-200 shadow-sm">{ps.theme}</span>
+                          <span className="bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-slate-200 shadow-sm uppercase font-semibold">{ps.category}</span>
+                        </div>
+                      </div>
+                    ))}
+
+                    {filteredPs.length === 0 && (
+                      <div className="p-4 text-center text-sm text-slate-500">
+                        No problem statements found.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
