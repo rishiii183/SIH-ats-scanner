@@ -3,6 +3,7 @@ import './globals.css';
 import { DisclaimerBanner } from './components/DisclaimerBanner';
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { NextAuthProvider } from "./components/NextAuthProvider";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", inter.variable)}>
       <body className="min-h-screen flex flex-col bg-[#FDFBF7] text-slate-800 antialiased selection:bg-orange-500 selection:text-white">
-        <DisclaimerBanner />
-        <main className="flex-1">{children}</main>
-        <footer className="w-full border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-          <p>© 2026 SIH-ATS Scanner • Built for Smart India Hackathon Participants</p>
-        </footer>
+        <NextAuthProvider>
+          <DisclaimerBanner />
+          <main className="flex-1">{children}</main>
+          <footer className="w-full border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+            <p>© 2026 SIH-ATS Scanner • Built for Smart India Hackathon Participants</p>
+          </footer>
+        </NextAuthProvider>
       </body>
     </html>
   );
