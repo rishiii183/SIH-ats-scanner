@@ -1,0 +1,25 @@
+# SIH ATS Scanner — AI System & Crawling Specification
+
+> SIH ATS Scanner evaluates Smart India Hackathon (SIH 2026) pitch decks against official 6-slide format guidelines. It automatically audits slide counts, mandatory section headings, presentation clarity, technical depth, and problem statement alignment before submission.
+
+## Core Purpose
+The SIH ATS Scanner is an independent web application for Smart India Hackathon participants. It parses presentation slides (.pptx and .pdf) and returns an objective score report with slide-by-slide flags and actionable rewrite suggestions.
+
+## Key System Specifications
+- **Target Event**: Smart India Hackathon 2026 (SIH 2026)
+- **Official Deck Format Limit**: Maximum 6 slides (mandatory title, problem, solution, technical approach, impact, team slides).
+- **Evaluation Criteria**:
+  1. Structure & Format (Hard Check): Slide count limit, mandatory section titles, file type, file size.
+  2. Presentation Clarity (Hard Check): Text density per slide (<70 words/slide), visual diagram presence, bullet point ratio.
+  3. Problem Statement Alignment (Estimated): Cosine similarity embedding analysis using SentenceTransformers against SIH problem statement descriptions.
+  4. Technical Depth (Estimated): 4-criterion technical checklist (framework/language specificity, database/storage, model/algorithm, architecture workflow).
+  5. Originality (Estimated): Overlap & template boilerplate detection against past hackathon submission corpus.
+
+## Primary Routes
+- `/`: Main presentation scanner and instant evaluation dashboard.
+- `/guidelines`: Official SIH 2026 Idea Presentation Format guidelines & slide checklist.
+- `/faq`: Frequently asked questions regarding SIH deck scoring, rules, and privacy.
+- `/upgrade`: Pro subscription plans and batch scanning options.
+
+## Non-Affiliation Notice
+SIH ATS Scanner is an independent tool built for hackathon participants. It is not officially affiliated with, endorsed by, or sponsored by Smart India Hackathon (SIH), AICTE, or the Ministry of Education (MoE), Government of India.

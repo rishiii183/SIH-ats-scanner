@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { UploadSection } from './components/UploadSection';
 import { ProgressTracker } from './components/ProgressTracker';
 import { ReportDashboard } from './components/ReportDashboard';
+import { LandingContent } from './components/LandingContent';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -195,6 +196,9 @@ export default function Home() {
             </button>
           </div>
         )}
+
+        {/* Indexable SEO & GEO Content Block */}
+        <LandingContent />
       </main>
     </div>
   );
