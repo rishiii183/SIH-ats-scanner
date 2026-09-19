@@ -1,10 +1,11 @@
 import os
 import shutil
 import asyncio
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, Form, Header, HTTPException, BackgroundTasks
 from typing import Optional
 from app.config import settings
 from app.database import DBManager
+from app.security import validate_uploaded_file, extract_user_from_auth_header
 from app.parsers.pptx_parser import PPTXParser
 from app.parsers.pdf_parser import PDFParser
 from app.scoring.aggregator import ScoreAggregator
@@ -46,31 +47,46 @@ def process_submission_pipeline(sub_id: str, file_path: str, file_type: str, ps_
 async def upload_submission(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    ps_id: Optional[str] = Form(None)
+    ps_id: Optional[str] = Form(None),
+    authorization: Optional[str] = Header(None)
 ):
     """
-    Upload presentation file (.pptx or .pdf) and initiate SIH ATS scoring scan.
+    Production Upload Endpoint:
+    1. Validates magic bytes, file format (.pptx or .pdf), and max size (25MB).
+    2. Uploads file to Supabase Cloud Storage bucket ('sih-decks').
+    3. Resolves user session if Bearer token is attached.
+    4. Queues background AI evaluation pipeline.
     """
-    filename = file.filename or "presentation.pptx"
-    ext = filename.split(".")[-1].lower()
+    # 1. Security & Magic-byte validation
+    filename, ext, file_bytes = await validate_uploaded_file(file)
 
-    if ext not in ["pptx", "pdf"]:
-        raise HTTPException(status_code=400, detail="Unsupported file format. Please upload a .pptx or .pdf file.")
+    # 2. Local caching for processing worker
+    local_file_path = os.path.join(settings.UPLOAD_DIR, filename)
+    with open(local_file_path, "wb") as f:
+        f.write(file_bytes)
 
-    # Save uploaded file
-    file_path = os.path.join(settings.UPLOAD_DIR, filename)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # 3. Cloud Storage Upload (Supabase Bucket)
+    file_url = DBManager.upload_file_to_storage(file_bytes, filename)
 
-    # Record submission
-    submission = DBManager.create_submission(file_name=filename, file_type=ext, ps_id=ps_id)
+    # 4. Optional user identification
+    user_info = extract_user_from_auth_header(authorization)
+    user_email = user_info.get("email") if user_info else None
+
+    # 5. Create persistent submission entry
+    submission = DBManager.create_submission(
+        file_name=filename, 
+        file_type=ext, 
+        file_url=file_url,
+        ps_id=ps_id,
+        user_email=user_email
+    )
     sub_id = submission["id"]
 
-    # Trigger background scoring pipeline
+    # 6. Trigger background scoring pipeline
     background_tasks.add_task(
         process_submission_pipeline, 
         sub_id=sub_id, 
-        file_path=file_path, 
+        file_path=local_file_path, 
         file_type=ext, 
         ps_id=ps_id
     )
@@ -78,7 +94,8 @@ async def upload_submission(
     return {
         "submission_id": sub_id,
         "status": "queued",
-        "message": "File uploaded successfully. Scanning initiated."
+        "file_url": file_url,
+        "message": "File uploaded and verified. AI evaluation initiated."
     }
 
 @router.get("/{sub_id}/status")
@@ -103,3 +120,4 @@ def get_submission_report(sub_id: str):
             raise HTTPException(status_code=202, detail="Report generation still in progress.")
         raise HTTPException(status_code=404, detail="Report not ready or submission failed.")
     return report
+
