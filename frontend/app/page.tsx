@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { Header } from './components/Header';
 import { UploadSection } from './components/UploadSection';
 import { ProgressTracker } from './components/ProgressTracker';
@@ -9,9 +9,7 @@ import { ReportDashboard } from './components/ReportDashboard';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-
 export default function Home() {
-  const { data: session } = useSession();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle');
@@ -56,8 +54,10 @@ export default function Home() {
         setReport(data);
 
         // Record scan history for the user
+        const session = await getSession();
         const userEmail = session?.user?.email;
         const newScanItem = {
+
           id: subId,
           file_name: uploadedFileName || 'SIH_Presentation.pptx',
           created_at: new Date().toISOString(),
