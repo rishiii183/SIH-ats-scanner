@@ -66,6 +66,7 @@ async def upload_submission(
     """
     # 1. Security & Magic-byte validation
     filename, ext, file_bytes = await validate_uploaded_file(file)
+    clean_ps_id = sanitize_text(ps_id, max_length=50) if ps_id else None
 
     # 2. Local caching for processing worker
     local_file_path = os.path.join(settings.UPLOAD_DIR, filename)
@@ -84,7 +85,7 @@ async def upload_submission(
         file_name=filename, 
         file_type=ext, 
         file_url=file_url,
-        ps_id=ps_id,
+        ps_id=clean_ps_id,
         user_email=user_email
     )
     sub_id = submission["id"]
@@ -95,7 +96,7 @@ async def upload_submission(
         sub_id=sub_id, 
         file_path=local_file_path, 
         file_type=ext, 
-        ps_id=ps_id
+        ps_id=clean_ps_id
     )
 
     return {

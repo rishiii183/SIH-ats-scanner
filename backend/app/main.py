@@ -31,13 +31,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 2. Performance & Request Timing + Security Headers Middleware
+# 2. Performance, Rate Limiting & Security Headers Middleware
 @app.middleware("http")
 async def production_security_and_logging_middleware(request: Request, call_next):
+    # Enforce Rate Limiting
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    
+    # Don't rate limit health checks
+    if not request.url.path.endswith("/health"):
+        from app.security import rate_limiter
+        is_limited, retry_after = rate_limiter.is_rate_limited(client_ip)
+        if is_limited:
+            logger.warning(f"Rate limit exceeded for IP: {client_ip} on {request.url.path}")
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error": "Too Many Requests",
+                    "message": f"Rate limit exceeded. Please retry after {retry_after} seconds.",
+                    "retry_after": retry_after
+                },
+                headers={"Retry-After": str(retry_after)}
+            )
+
     start_time = time.time()
-    
     response: Response = await call_next(request)
-    
     process_time = (time.time() - start_time) * 1000
     response.headers["X-Process-Time-Ms"] = f"{process_time:.2f}"
     
