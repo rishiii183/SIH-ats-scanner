@@ -326,3 +326,53 @@ class DBManager:
                 print(f"Supabase fetch report error: {e}")
 
         return None
+
+    # ==========================================
+    # 5. FULL AUDIT TRAIL PERSISTENCE
+    # ==========================================
+    @classmethod
+    def save_audit_trail(
+        cls,
+        sub_id: str,
+        rubric_config_id: str,
+        extracted_text_metadata: Dict[str, Any],
+        llm_prompt_raw_response: Dict[str, Any],
+        weight_math_details: Dict[str, Any]
+    ):
+        audit_record = {
+            "submission_id": sub_id,
+            "rubric_config_id": rubric_config_id,
+            "extracted_text_metadata": extracted_text_metadata,
+            "llm_prompt_raw_response": llm_prompt_raw_response,
+            "weight_math_details": weight_math_details,
+            "timestamp": datetime.now().isoformat()
+        }
+
+        # Save to local cache
+        PROGRESS_CACHE[f"audit_{sub_id}"] = audit_record
+
+        # Save to Supabase PostgreSQL table 'submission_audit_trail'
+        client = cls.get_client()
+        if client:
+            try:
+                client.table("submission_audit_trail").upsert(audit_record, on_conflict="submission_id").execute()
+            except Exception as e:
+                print(f"Supabase save submission_audit_trail error (will use local cache): {e}")
+
+    @classmethod
+    def get_audit_trail(cls, sub_id: str) -> Optional[Dict[str, Any]]:
+        # Check cache
+        if f"audit_{sub_id}" in PROGRESS_CACHE:
+            return PROGRESS_CACHE[f"audit_{sub_id}"]
+
+        client = cls.get_client()
+        if client:
+            try:
+                res = client.table("submission_audit_trail").select("*").eq("submission_id", sub_id).maybe_single().execute()
+                if res.data:
+                    return res.data
+            except Exception as e:
+                print(f"Supabase fetch audit trail error: {e}")
+
+        return None
+

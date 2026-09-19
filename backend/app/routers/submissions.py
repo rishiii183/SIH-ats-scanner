@@ -41,8 +41,33 @@ def process_submission_pipeline(sub_id: str, file_path: str, file_type: str, ps_
         )
         time.sleep(0.4)
 
-        # Step 4: Finalize & Save Report
+        # Step 4: Finalize & Save Report & Audit Trail
         DBManager.save_report(sub_id, report_data)
+
+        # Extract text metadata for audit trail
+        extracted_meta = [
+            {
+                "slide_number": s.get("slide_number"),
+                "word_count": len(s.get("raw_text", "").split()),
+                "bullet_count": s.get("bullet_count", 0),
+                "text_snippet": s.get("raw_text", "")[:150]
+            } for s in slides
+        ]
+
+        # Extract LLM details from raw category results if present
+        tech_breakdown = report_data.get("category_breakdown", {}).get("technical_depth", {})
+        llm_audit = {
+            "prompt": "Structured Checklist Audit (names_specific_framework_or_language, names_specific_database_or_storage, names_specific_model_or_algorithm, describes_architecture_or_workflow)",
+            "raw_response": tech_breakdown.get("raw_checklist", {})
+        }
+
+        DBManager.save_audit_trail(
+            sub_id=sub_id,
+            rubric_config_id=report_data.get("rubric_config_id", "sih-2026-default"),
+            extracted_text_metadata={"slides": extracted_meta, "total_slides": len(slides)},
+            llm_prompt_raw_response=llm_audit,
+            weight_math_details=report_data.get("weight_math_details", {})
+        )
 
     except Exception as e:
         DBManager.update_submission_status(sub_id, "failed", f"Processing error: {str(e)}", 0)
@@ -133,4 +158,15 @@ def get_submission_report(sub_id: str):
             raise HTTPException(status_code=202, detail="Report generation still in progress.")
         raise HTTPException(status_code=404, detail="Report not ready or submission failed.")
     return report
+
+@router.get("/{sub_id}/audit_trail")
+def get_submission_audit_trail(sub_id: str):
+    """
+    Retrieve permanent submission audit trail (extracted text, prompt/response, weight math).
+    """
+    audit = DBManager.get_audit_trail(sub_id)
+    if not audit:
+        raise HTTPException(status_code=404, detail="Audit trail not found.")
+    return audit
+
 

@@ -23,7 +23,8 @@ class ClarityScorer:
 
         for slide in slides:
             slide_num = slide["slide_number"]
-            word_cnt = slide.get("word_count", 0)
+            raw_t = slide.get("raw_text", "")
+            word_cnt = slide.get("word_count") or (len(raw_t.split()) if raw_t else 0)
             bullet_cnt = slide.get("bullet_count", 0)
             img_cnt = slide.get("image_count", 0)
 
@@ -45,8 +46,11 @@ class ClarityScorer:
             reasons.append({
                 "deduction": round(penalty, 1),
                 "slide_number": dense_slides,
+                "evidence": f"Slides {dense_slides} contain dense paragraphs exceeding 70 words per slide.",
+                "rule_violated": "max_words_per_slide: 70",
+                "source_type": "rubric_citation",
                 "message": f"Slides {dense_slides} contain dense paragraphs (>70 words per slide). SIH evaluators prefer concise points.",
-                "cited_source": "SIH 2026 Presentation Rules: Use points, diagrams, and flowcharts — avoid walls of paragraph text."
+                "cited_source": "SIH Presentation Guidelines: Use bullet points, diagrams, and flowcharts — avoid walls of paragraph text."
             })
 
         # 2. Visual / Diagram Presence Check
@@ -56,8 +60,11 @@ class ClarityScorer:
             reasons.append({
                 "deduction": round(penalty, 1),
                 "slide_number": low_visual_slides,
+                "evidence": f"Slides {low_visual_slides} contain 0 embedded visual images or diagrams.",
+                "rule_violated": "missing_visual_diagrams on technical slides",
+                "source_type": "rubric_citation",
                 "message": f"Slides {low_visual_slides} (Proposed Solution / Tech Stack) lack visual diagrams or system flowcharts.",
-                "cited_source": "SIH 2026 Design Guidelines: Architecture and technical flow should be demonstrated visually via diagrams."
+                "cited_source": "SIH Design Guidelines: Architecture and technical flow should be demonstrated visually via diagrams."
             })
 
         # 3. Bullet Point Ratio Check
@@ -66,22 +73,30 @@ class ClarityScorer:
             score -= 15.0
             reasons.append({
                 "deduction": 15.0,
+                "evidence": f"Average word density is {round(avg_words_per_slide, 1)} words per slide across presentation.",
+                "rule_violated": "max_avg_words_per_slide: 100",
+                "source_type": "rubric_citation",
                 "message": f"Average word count is {round(avg_words_per_slide)} words/slide. High risk of evaluator fatigue.",
-                "cited_source": "Jury Scoring Criterion: Clarity & Conciseness."
+                "cited_source": "Jury Scoring Criterion: Presentation Clarity & Conciseness."
             })
 
         final_score = max(0.0, min(100.0, score))
         if not reasons:
             reasons.append({
                 "deduction": 0.0,
+                "evidence": f"Average density is {round(avg_words_per_slide, 1)} words per slide with visual diagrams present.",
+                "rule_violated": "none (full compliance)",
+                "source_type": "rubric_citation",
                 "message": "Excellent visual clarity: slides use concise bullet points and diagrams effectively.",
                 "cited_source": "SIH Presentation Standard: Pass."
             })
 
         return {
             "status": "available",
+            "confidence_type": "hard_check",
             "score": round(final_score, 1),
             "reasons": reasons,
             "avg_words_per_slide": round(avg_words_per_slide, 1)
         }
+
 

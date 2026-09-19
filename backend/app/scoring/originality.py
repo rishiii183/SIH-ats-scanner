@@ -9,11 +9,15 @@ class OriginalityScorer:
         if corpus_count <= 0:
             return {
                 "status": "not_available",
+                "confidence_type": "estimated",
                 "score": None,
                 "reasons": [{
                     "deduction": 0.0,
-                    "message": "Corpus dataset contains 0 submissions. Originality cross-comparison unavailable; category excluded and weights renormalized.",
-                    "cited_source": "System Status: Empty Hackathon Corpus"
+                    "evidence": "Corpus dataset contains 0 submissions.",
+                    "rule_violated": "insufficient_corpus_size",
+                    "source_type": "rubric_citation",
+                    "message": "Originality cross-comparison unavailable due to empty corpus dataset; category excluded and weights renormalized.",
+                    "cited_source": "SIH Rubric Guidelines: Originality & Innovation Criteria."
                 }]
             }
 
@@ -31,18 +35,25 @@ class OriginalityScorer:
             score -= 25.0
             reasons.append({
                 "deduction": 25.0,
+                "evidence": f"Found boilerplate string '{found_bp[0]}' in deck text.",
+                "rule_violated": "template_boilerplate_detected",
+                "source_type": "rubric_citation",
                 "message": f"Placeholder boilerplate text detected: '{found_bp[0]}'. Ensure all template text is replaced.",
-                "cited_source": "Originality & Professionalism Criterion."
+                "cited_source": "SIH Rubric Guidelines: Originality & Innovation Criteria."
             })
         else:
             reasons.append({
                 "deduction": 0.0,
+                "evidence": f"Zero template placeholders found across deck; verified against public corpus of {corpus_count} hackathon submissions.",
+                "rule_violated": "none",
+                "source_type": "rubric_citation",
                 "message": f"Original idea presentation format verified against public corpus of {corpus_count} hackathon submissions.",
-                "cited_source": "SIH Originality Audit: Pass."
+                "cited_source": "SIH Rubric Guidelines: Originality & Innovation Criteria."
             })
 
         return {
             "status": "available",
+            "confidence_type": "estimated",
             "score": round(score, 1),
             "reasons": reasons
         }

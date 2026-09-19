@@ -134,16 +134,52 @@ class ScoreAggregator:
                 "suggestion": "Convert paragraph descriptions into bullet points and system flow diagrams."
             })
 
-        # 5. Build Category Breakdown
+        # 5. Build Category Breakdown with confidence_type and explicit phrasing
         category_breakdown = {}
+        confidence_type_map = {
+            "structure_format": "hard_check",
+            "clarity": "hard_check",
+            "ps_alignment": "estimated",
+            "technical_depth": "estimated",
+            "originality": "estimated"
+        }
+
         for cat_key, res in raw_results.items():
+            conf_type = confidence_type_map.get(cat_key, "estimated")
             category_breakdown[cat_key] = {
                 "status": res.get("status", "available"),
+                "confidence_type": conf_type,
                 "score": res.get("score"),
                 "nominal_weight": nominal_weights.get(cat_key, 0.20),
                 "weight_applied": renormalized_weights.get(cat_key, 0.0),
                 "reasons": res.get("reasons", [])
             }
+
+        # Weight Math Details for Audit Trail
+        math_steps = []
+        for cat_key, nom_w in nominal_weights.items():
+            res = raw_results.get(cat_key, {})
+            status = res.get("status", "not_available")
+            score_val = res.get("score")
+            applied_w = renormalized_weights.get(cat_key, 0.0)
+            if status == "available" and score_val is not None:
+                math_steps.append(f"{cat_key}: {score_val} * {applied_w} = {round(score_val * applied_w, 3)}")
+            else:
+                math_steps.append(f"{cat_key}: NOT AVAILABLE (nominal weight {nom_w} redistributed)")
+
+        weight_math_details = {
+            "nominal_weights": nominal_weights,
+            "total_active_weight": round(total_active_weight, 4),
+            "missing_weight": missing_weight,
+            "renormalized_weights": renormalized_weights,
+            "calculation_formula": " + ".join([s for s in math_steps if "NOT AVAILABLE" not in s]),
+            "overall_score": overall_score
+        }
+
+        disclaimer = (
+            "DISCLAIMER: Scores reflect format compliance and content signals correlated with publicly "
+            "available SIH criteria, not a guarantee of judging outcomes or shortlisting probability."
+        )
 
         return {
             "overall_score": overall_score,
@@ -151,10 +187,12 @@ class ScoreAggregator:
             "missing_weight_pct": round(missing_weight * 100, 1),
             "missing_categories": missing_cat_names,
             "verdict_text": verdict,
+            "disclaimer": disclaimer,
             "rubric_config_id": rubric_config_id,
             "rubric_stamp": f"Scored against Rubric Config ID #{rubric_config_id}",
             "active_pillars_count": len([w for w in renormalized_weights.values() if w > 0]),
             "category_breakdown": category_breakdown,
+            "weight_math_details": weight_math_details,
             "rewrite_suggestions": rewrite_suggestions
         }
 

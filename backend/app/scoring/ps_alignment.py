@@ -81,20 +81,28 @@ class PSAlignmentScorer:
         if similarity < 0.50:
             reasons.append({
                 "deduction": round(100.0 - score, 1),
-                "message": f"Low keyword & semantic alignment detected with selected PS '{ps_title}'. Ensure problem & solution slides explicitly echo core domain terms from the official problem statement.",
+                "evidence": f"Calculated cosine similarity score is {round(similarity, 3)} against PS '{ps_title}'.",
+                "rule_violated": "min_semantic_similarity_threshold: 0.50",
+                "source_type": "rubric_citation",
+                "message": f"Semantic analysis indicates moderate domain alignment with selected PS '{ps_title}' (Cosine Similarity: {round(similarity, 3)}). Ensure problem & solution slides explicitly echo core domain terms.",
                 "cited_source": "SIH Evaluation Rubric §1: Solution alignment with specified problem statement."
             })
         else:
             reasons.append({
                 "deduction": 0.0,
-                "message": f"Strong domain alignment verified with Problem Statement '{ps_title}' (Cosine Similarity: {round(similarity, 2)}).",
+                "evidence": f"Calculated cosine similarity score is {round(similarity, 3)} against PS '{ps_title}'.",
+                "rule_violated": "none (strong domain match)",
+                "source_type": "rubric_citation",
+                "message": f"Strong domain alignment verified with Problem Statement '{ps_title}' (Cosine Similarity: {round(similarity, 3)}).",
                 "cited_source": "SIH Evaluation Rubric §1: Domain Alignment Pass."
             })
 
         return {
             "status": "available",
+            "confidence_type": "estimated",
             "score": round(score, 1),
             "similarity_score": round(float(similarity), 3),
             "reasons": reasons
         }
+
 

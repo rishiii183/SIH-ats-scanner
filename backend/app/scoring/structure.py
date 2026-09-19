@@ -21,6 +21,8 @@ class StructureScorer:
         required_sections = config.get("required_sections", cls.DEFAULT_REQUIRED_SECTIONS)
         rubric_config_id = config.get("id", "fallback-default-2026")
 
+        rubric_source_text = config.get("source_doc_text", f"Official SIH Rubric Config #{rubric_config_id}: Maximum slide count strictly capped at {max_slides} slides.")
+
         score = 100.0
         reasons = []
         total_slides = len(slides)
@@ -31,15 +33,21 @@ class StructureScorer:
             score -= penalty
             reasons.append({
                 "deduction": round(penalty, 1),
+                "evidence": f"Presentation document parsed with {total_slides} total slides.",
+                "rule_violated": f"exceeds max_slides limit: {max_slides}",
+                "source_type": "rubric_citation",
                 "message": f"Presentation has {total_slides} slides, exceeding the active rubric maximum limit of {max_slides} slides.",
-                "cited_source": f"Rubric Config #{rubric_config_id}: Maximum slide count strictly capped at {max_slides} slides."
+                "cited_source": rubric_source_text
             })
         elif total_slides < 3:
             score -= 30.0
             reasons.append({
                 "deduction": 30.0,
+                "evidence": f"Presentation document contains only {total_slides} slide(s).",
+                "rule_violated": "below min_slides threshold: 3",
+                "source_type": "rubric_citation",
                 "message": f"Presentation has only {total_slides} slides. Minimum expected is 3 slides to cover required sections.",
-                "cited_source": f"Rubric Config #{rubric_config_id}: Insufficient slides to cover required proposal details."
+                "cited_source": rubric_source_text
             })
 
         # 2. Required Section Coverage Check
@@ -56,24 +64,32 @@ class StructureScorer:
             score -= sec_penalty
             reasons.append({
                 "deduction": round(sec_penalty, 1),
+                "evidence": f"Omitted section headings: {', '.join(missing_sections)}.",
+                "rule_violated": f"missing mandatory required_sections: {', '.join(missing_sections)}",
+                "source_type": "rubric_citation",
                 "message": f"Missing mandatory section headings: {', '.join(missing_sections)}.",
-                "cited_source": f"Rubric Config #{rubric_config_id}: Decks must explicitly cover specified section topics."
+                "cited_source": rubric_source_text
             })
 
         final_score = max(0.0, min(100.0, score))
         if not reasons:
             reasons.append({
                 "deduction": 0.0,
+                "evidence": f"Verified {total_slides} slides containing all required section headings.",
+                "rule_violated": "none (full compliance)",
+                "source_type": "rubric_citation",
                 "message": f"Deck perfectly satisfies the {max_slides}-slide count and required section structure guidelines.",
-                "cited_source": f"Rubric Config #{rubric_config_id}: Structure Compliance Pass."
+                "cited_source": rubric_source_text
             })
 
         return {
             "status": "available",
+            "confidence_type": "hard_check",
             "score": round(final_score, 1),
             "reasons": reasons,
             "total_slides": total_slides,
             "missing_sections": missing_sections,
             "rubric_config_id": rubric_config_id
         }
+
 
