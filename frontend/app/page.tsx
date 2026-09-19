@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { UploadSection } from './components/UploadSection';
 import { ProgressTracker } from './components/ProgressTracker';
 import { ReportDashboard } from './components/ReportDashboard';
+import { AlertCircle, RotateCcw } from 'lucide-react';
 
 export default function Home() {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
@@ -90,10 +91,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#FDFBF7] selection:bg-orange-500 selection:text-white">
+      {/* Subtle Ambient Decorative Gradient Blobs */}
+      <div className="absolute top-[-5%] left-[-10%] w-[45%] h-[45%] rounded-full bg-orange-400/10 blur-[130px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-400/10 blur-[130px] pointer-events-none mix-blend-multiply" />
+      <div className="absolute bottom-[-10%] left-[20%] w-[50%] h-[50%] rounded-full bg-slate-300/20 blur-[140px] pointer-events-none mix-blend-multiply" />
+
       <Header />
 
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 relative z-10">
         {status === 'idle' && (
           <UploadSection onStartUpload={handleStartUpload} />
         )}
@@ -107,17 +113,20 @@ export default function Home() {
         )}
 
         {status === 'failed' && (
-          <div className="w-full max-w-lg mx-auto my-12 p-8 rounded-2xl bg-white shadow-xl border border-red-200 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto font-bold text-xl">
-              !
+          <div className="w-full max-w-lg mx-auto my-16 p-8 rounded-3xl bg-white/80 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-red-200/80 text-center space-y-5 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mx-auto border border-red-100 shadow-sm">
+              <AlertCircle className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Scan Failed</h3>
-            <p className="text-xs text-slate-500">{errorMsg}</p>
+            <div className="space-y-1">
+              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Scan Failed</h3>
+              <p className="text-sm text-slate-500">{errorMsg}</p>
+            </div>
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 shadow-sm"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-md hover:shadow-lg transition-all"
             >
-              Try Again
+              <RotateCcw className="w-4 h-4" />
+              <span>Try Again</span>
             </button>
           </div>
         )}
