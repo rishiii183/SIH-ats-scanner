@@ -1,14 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { Header } from './components/Header';
 import { UploadSection } from './components/UploadSection';
 import { ProgressTracker } from './components/ProgressTracker';
 import { ReportDashboard } from './components/ReportDashboard';
 import { AlertCircle, RotateCcw } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+
 
 export default function Home() {
+  const { data: session } = useSession();
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'processing' | 'completed' | 'failed'>('idle');
   const [progressMsg, setProgressMsg] = useState<string>('Initiating scan...');
   const [progressPct, setProgressPct] = useState<number>(10);
@@ -49,6 +54,58 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         setReport(data);
+
+        // Record scan history for the user
+        const userEmail = session?.user?.email;
+        const newScanItem = {
+          id: subId,
+          file_name: uploadedFileName || 'SIH_Presentation.pptx',
+          created_at: new Date().toISOString(),
+          status: 'completed',
+          report: {
+            overall_score: data.overall_score,
+            verdict_text: data.verdict_text,
+          }
+        };
+
+        if (userEmail) {
+          // 1. Save to local storage for instant sync
+          const storageKey = `sih_user_scans_${userEmail.toLowerCase()}`;
+          const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          const updated = [newScanItem, ...existing.filter((s: any) => s.id !== subId)];
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+
+          // 2. Persist to Supabase if user exists
+          try {
+            const { data: userRec } = await supabase
+              .from('users')
+              .select('id')
+              .eq('email', userEmail.toLowerCase())
+              .maybeSingle();
+
+            if (userRec?.id) {
+              const { data: subData } = await supabase.from('submissions').insert({
+                user_id: userRec.id,
+                file_name: uploadedFileName || 'SIH_Presentation.pptx',
+                file_url: 'local',
+                file_type: uploadedFileName?.endsWith('.pdf') ? 'pdf' : 'pptx',
+                status: 'completed',
+              }).select().single();
+
+              if (subData?.id) {
+                await supabase.from('reports').insert({
+                  submission_id: subData.id,
+                  overall_score: data.overall_score,
+                  verdict_text: data.verdict_text,
+                  category_breakdown: data.category_breakdown || {},
+                  rewrite_suggestions: data.rewrite_suggestions || [],
+                });
+              }
+            }
+          } catch (dbErr) {
+            console.error('Supabase scan persist error:', dbErr);
+          }
+        }
       }
     } catch (err) {
       setErrorMsg('Failed to fetch evaluation report.');
@@ -58,12 +115,14 @@ export default function Home() {
   const handleStartUpload = async (file: File, psId: string) => {
     setStatus('processing');
     setErrorMsg(null);
+    setUploadedFileName(file.name);
     setProgressMsg('Uploading presentation file...');
     setProgressPct(15);
 
     const formData = new FormData();
     formData.append('file', file);
     if (psId) formData.append('ps_id', psId);
+
 
     try {
       const res = await fetch('/api/v1/submissions/upload', {
