@@ -5,6 +5,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from app.scoring.structure import StructureScorer
 from app.scoring.clarity import ClarityScorer
+from app.scoring.ps_alignment import PSAlignmentScorer
+from app.scoring.tech_depth import TechDepthScorer
+from app.scoring.originality import OriginalityScorer
 from app.scoring.aggregator import ScoreAggregator
 from app.database import DBManager
 
@@ -30,7 +33,7 @@ def test_adversarial_bad_deck():
         "image_count": 0
     })
 
-    # Slide 3: Wall of text with 10 bullet points and 110 words
+    # Slide 3: Wall of text with 11 bullet points and 110 words
     wall_text = (
         "Proposed Solution & Overview: Point 1: We build a website. Point 2: We build a database. "
         "Point 3: We connect cloud servers. Point 4: We train a model. Point 5: We create UI screens. "
@@ -42,10 +45,10 @@ def test_adversarial_bad_deck():
         "raw_text": wall_text,
         "word_count": 110,
         "bullet_count": 11,
-        "image_count": 0  # Missing visual diagram on slide 3
+        "image_count": 0
     })
 
-    # Slide 4: Tech Stack (Missing visual diagram on slide 4)
+    # Slide 4: Tech Stack
     bad_slides.append({
         "slide_number": 4,
         "raw_text": "Technical Approach & Tech Stack: Python, MySQL.",
@@ -63,7 +66,7 @@ def test_adversarial_bad_deck():
         "image_count": 0
     })
 
-    # Slides 6 to 12: Filler slides to blow past 6-slide max limit, and MISSING References/Team slide!
+    # Slides 6 to 12: Filler slides exceeding 6-slide max limit and missing References/Team section
     for i in range(6, 13):
         bad_slides.append({
             "slide_number": i,
@@ -74,33 +77,75 @@ def test_adversarial_bad_deck():
         })
 
     rubric_config = DBManager.get_active_rubric_config()
+    ps_title = "AI-Based Smart Traffic Management System for Urban Cities"
+    ps_description = "Develop real-time traffic signal optimization system using computer vision and IoT sensors."
 
-    print("--- 1. StructureScorer Adversarial Evaluation ---")
+    print("==================================================")
+    print("      ADVERSARIAL DECK SCORING AUDIT              ")
+    print("==================================================")
+
+    # 1. Structure
     struct_res = StructureScorer.evaluate(bad_slides, rubric_config)
-    print("Structure Score:", struct_res["score"])
-    print("Structure Reasons:")
-    for r in struct_res["reasons"]:
-        print("  - Deduction:", r["deduction"], "| Message:", r["message"])
+    print(f"\n1. Structure & Format Compliance:")
+    print(f"   Raw Score: {struct_res['score']} / 100")
+    for r in struct_res['reasons']:
+        print(f"   - Deduction: -{r['deduction']} pts | Message: {r['message']}")
 
-    print("\n--- 2. ClarityScorer Adversarial Evaluation ---")
+    # 2. PS Alignment
+    align_res = PSAlignmentScorer.evaluate(bad_slides, ps_title, ps_description)
+    print(f"\n2. Problem Statement Alignment:")
+    print(f"   Raw Score: {align_res['score']} / 100")
+    print(f"   Cosine Similarity: {align_res.get('similarity_score', 0)}")
+    for r in align_res['reasons']:
+        print(f"   - Deduction: -{r['deduction']} pts | Message: {r['message']}")
+
+    # 3. Clarity
     clarity_res = ClarityScorer.evaluate(bad_slides)
-    print("Clarity Score:", clarity_res["score"])
-    print("Clarity Reasons:")
-    for r in clarity_res["reasons"]:
-        print("  - Deduction:", r["deduction"], "| Message:", r["message"])
+    print(f"\n3. Presentation Clarity:")
+    print(f"   Raw Score: {clarity_res['score']} / 100")
+    for r in clarity_res['reasons']:
+        print(f"   - Deduction: -{r['deduction']} pts | Message: {r['message']}")
 
-    print("\n--- 3. Full ScoreAggregator Adversarial Evaluation ---")
+    # 4. Tech Depth & Originality Status
+    tech_res = TechDepthScorer.evaluate(bad_slides, "")
+    orig_res = OriginalityScorer.evaluate(bad_slides, 0)
+    print(f"\n4. Technical Depth Status: {tech_res['status']} (Weight 0.0)")
+    print(f"5. Originality Status: {orig_res['status']} (Weight 0.0)")
+
+    # 5. Full Aggregator Evaluation
     report = ScoreAggregator.process_submission(
         slides=bad_slides,
-        ps_title="AI-Based Smart Traffic Management System for Urban Cities",
-        ps_description="Develop real-time traffic signal optimization system.",
+        ps_title=ps_title,
+        ps_description=ps_description,
         rubric_config=rubric_config
     )
 
-    print("Overall Score:", report["overall_score"])
-    print("Verdict Text:", report["verdict_text"])
-    print("Evaluation Completeness:", report["evaluation_completeness"])
-    print("Breakdown:", report["category_breakdown"])
+    cb = report["category_breakdown"]
+    s_score = cb["structure_format"]["score"]
+    s_w = cb["structure_format"]["weight_applied"]
+    
+    a_score = cb["ps_alignment"]["score"]
+    a_w = cb["ps_alignment"]["weight_applied"]
+
+    c_score = cb["clarity"]["score"]
+    c_w = cb["clarity"]["weight_applied"]
+
+    print("\n==================================================")
+    print("      STEP-BY-STEP AGGREGATOR ARITHMETIC          ")
+    print("==================================================")
+    print(f"Nominal active category weights sum: 0.15 (Struct) + 0.20 (Align) + 0.15 (Clarity) = 0.50")
+    print(f"Renormalized Weight 1 (Structure):  0.15 / 0.50 = {s_w}")
+    print(f"Renormalized Weight 2 (PS Align):   0.20 / 0.50 = {a_w}")
+    print(f"Renormalized Weight 3 (Clarity):    0.15 / 0.50 = {c_w}")
+    print("--------------------------------------------------")
+    print(f"Component 1 (Structure):  {s_score} × {s_w} = {round(s_score * s_w, 2)}")
+    print(f"Component 2 (PS Align):   {a_score} × {a_w} = {round(a_score * a_w, 2)}")
+    print(f"Component 3 (Clarity):    {c_score} × {c_w} = {round(c_score * c_w, 2)}")
+    print("--------------------------------------------------")
+    calculated_sum = (s_score * s_w) + (a_score * a_w) + (c_score * c_w)
+    print(f"Calculated Overall Score Sum: {s_score * s_w:.2f} + {a_score * a_w:.2f} + {c_score * c_w:.2f} = {calculated_sum:.2f} (Rounded: {round(calculated_sum, 1)})")
+    print(f"Aggregator Reported Overall Score: {report['overall_score']}")
+    print(f"Verdict Text: {report['verdict_text']}")
 
 if __name__ == "__main__":
     test_adversarial_bad_deck()

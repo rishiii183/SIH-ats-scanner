@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.config import settings
 from app.database import DBManager
-from app.routers import problem_statements, submissions
+from app.routers import problem_statements, submissions, payments
+
 
 # Configure structured logging
 logging.basicConfig(
@@ -85,6 +86,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 # 4. Include API Routers
 app.include_router(problem_statements.router, prefix=settings.API_V1_STR)
 app.include_router(submissions.router, prefix=settings.API_V1_STR)
+app.include_router(payments.router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

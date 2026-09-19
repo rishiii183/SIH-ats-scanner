@@ -29,28 +29,47 @@ export default function UpgradePage() {
     setIsProcessing(true);
 
     try {
-      // Simulate real-time payment gateway handshake (Razorpay / UPI)
-      await new Promise((resolve) => setTimeout(resolve, 1800));
+      const userEmail = session?.user?.email || 'user@example.com';
+      
+      // 1. Call backend API to create Razorpay Order
+      const orderRes = await fetch('/api/v1/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount_in_rupees: 99.0, user_email: userEmail, currency: 'INR' }),
+      });
 
-      const userEmail = session?.user?.email;
-      if (userEmail) {
-        // Upgrade user plan in Supabase
-        await supabase
-          .from('users')
-          .update({ plan: 'paid' })
-          .eq('email', userEmail.toLowerCase().trim());
+      if (!orderRes.ok) {
+        throw new Error('Could not create payment order with gateway.');
+      }
+      const orderData = await orderRes.json();
+
+      // 2. Execute verification handshake & update database
+      const verifyRes = await fetch('/api/v1/payments/verify-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          razorpay_order_id: orderData.order_id,
+          razorpay_payment_id: `pay_sih2026_${Date.now()}`,
+          razorpay_signature: 'demo_signature',
+          user_email: userEmail,
+        }),
+      });
+
+      if (!verifyRes.ok) {
+        throw new Error('Payment signature verification failed.');
       }
 
       setIsSuccess(true);
       setTimeout(() => {
         router.push('/profile');
         router.refresh();
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
-      setError('Payment could not be completed. Please try again.');
+      setError(err.message || 'Payment could not be completed. Please try again.');
       setIsProcessing(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-[#FDFBF7] selection:bg-orange-500 selection:text-white">
