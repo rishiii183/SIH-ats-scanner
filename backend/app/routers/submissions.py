@@ -1,11 +1,9 @@
 import os
-import shutil
-import asyncio
 from fastapi import APIRouter, UploadFile, File, Form, Header, HTTPException, BackgroundTasks
 from typing import Optional
 from app.config import settings
 from app.database import DBManager
-from app.security import validate_uploaded_file, extract_user_from_auth_header
+from app.security import validate_uploaded_file, extract_user_from_auth_header, sanitize_text
 from app.parsers.pptx_parser import PPTXParser
 from app.parsers.pdf_parser import PDFParser
 from app.scoring.aggregator import ScoreAggregator
