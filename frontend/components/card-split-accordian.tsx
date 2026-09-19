@@ -1,12 +1,8 @@
 'use client';
 
 import React, { useState, type FC } from 'react';
-import { motion, MotionConfig, type Transition } from 'motion/react';
-import { ChevronDown, Send } from 'lucide-react';
-import { HiCursorArrowRipple } from 'react-icons/hi2';
-import { Layers } from 'lucide-react';
-import { IoIosTimer } from 'react-icons/io';
-import { PiHandTap } from 'react-icons/pi';
+import { motion, MotionConfig, type Transition } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import useMeasure from 'react-use-measure';
 
 export interface AccordionItemData {
@@ -18,60 +14,22 @@ export interface AccordionItemData {
 
 interface AccordionItemProps {
   item: AccordionItemData;
-
   setOpenId: (id: number | null) => void;
   index: number;
   total: number;
   openIndex: number;
 }
+
 interface AccordionProps {
   items?: AccordionItemData[];
 }
 
 const springTransition: Transition = {
   type: 'spring',
-  stiffness: 600,
-  damping: 50,
+  stiffness: 500,
+  damping: 40,
   mass: 1,
 };
-
-const DEFAULT_ITEMS: AccordionItemData[] = [
-  {
-    id: 1,
-    title: 'What is Interaction Design?',
-    icon: <HiCursorArrowRipple className="size-3 -rotate-10 md:size-4" />,
-    content:
-      'Interaction design focuses on creating engaging interfaces with well-thought-out behaviors and actions.',
-  },
-  {
-    id: 2,
-    title: 'Principles & Patterns',
-    icon: <Layers size={24} />,
-    content:
-      'Fundamental guidelines and repeated solutions that ensure consistency and usability in design.',
-  },
-  {
-    id: 3,
-    title: 'Usability & Accessibility',
-    icon: <PiHandTap size={26} className="-rotate-20" />,
-    content:
-      'Designing experiences that are easy to use and accessible to people of all abilities.',
-  },
-  {
-    id: 4,
-    title: 'Prototyping & Testing',
-    icon: <Send size={24} />,
-    content:
-      'Rapid experimentation and validation of ideas through prototypes and real user testing.',
-  },
-  {
-    id: 5,
-    title: 'UX Optimisation',
-    icon: <IoIosTimer size={26} />,
-    content:
-      'Improving user experience by analyzing behavior and refining interactions over time.',
-  },
-];
 
 const AccordionItem: FC<AccordionItemProps> = ({
   item,
@@ -83,81 +41,37 @@ const AccordionItem: FC<AccordionItemProps> = ({
   const [ref, bounds] = useMeasure();
   const isOpen = index === openIndex;
 
-  const isFirst = index === 0;
-  const isLast = index === total - 1;
-
-  const isBeforeOpen = index === openIndex - 1;
-  const isAfterOpen = index === openIndex + 1;
-
-  const isAlone = (isAfterOpen && isLast) || (isBeforeOpen && isFirst);
-
-  const BORDER_WIDTH = '1px';
-  const BORDER_STYLE = 'solid';
-  const borderTopWidth =
-    isFirst || isAfterOpen || isOpen ? BORDER_WIDTH : '0px';
-  const borderBottomWidth =
-    isLast || isBeforeOpen || isOpen ? BORDER_WIDTH : '0px';
-  const borderLeftWidth = BORDER_WIDTH;
-  const borderRightWidth = BORDER_WIDTH;
-
-  let borderTopLeftRadius = 0;
-  let borderTopRightRadius = 0;
-  let borderBottomLeftRadius = 0;
-  let borderBottomRightRadius = 0;
-
-  if (isOpen || isAlone) {
-    borderTopLeftRadius = 20;
-    borderTopRightRadius = 20;
-    borderBottomLeftRadius = 20;
-    borderBottomRightRadius = 20;
-  } else if (isBeforeOpen) {
-    borderBottomLeftRadius = 20;
-    borderBottomRightRadius = 20;
-  } else if (isAfterOpen) {
-    borderTopLeftRadius = 20;
-    borderTopRightRadius = 20;
-  } else if (isFirst) {
-    borderTopLeftRadius = 20;
-    borderTopRightRadius = 20;
-  } else if (isLast) {
-    borderBottomLeftRadius = 20;
-    borderBottomRightRadius = 20;
-  }
-
   return (
     <MotionConfig transition={springTransition}>
-      <motion.li layout>
+      <motion.li layout className="list-none w-full">
         <motion.div
-          animate={{
-            borderTopLeftRadius,
-            borderTopRightRadius,
-            borderBottomLeftRadius,
-            borderBottomRightRadius,
-          }}
-          className="overflow-hidden border-solid border-zinc-200 bg-zinc-50 will-change-transform dark:border-zinc-800 dark:bg-zinc-900"
-          style={{
-            borderTopWidth,
-            borderBottomWidth,
-            borderLeftWidth,
-            borderRightWidth,
-            borderStyle: BORDER_STYLE,
-            marginBlock: isOpen ? '10px' : '0px',
-          }}
+          className={`overflow-hidden rounded-2xl border transition-all duration-300 ${
+            isOpen
+              ? 'bg-orange-50/70 border-orange-200 shadow-sm'
+              : 'bg-white/80 hover:bg-white border-slate-200/80 shadow-xs hover:shadow-sm'
+          }`}
         >
           <button
+            type="button"
             onClick={() => setOpenId(isOpen ? null : item.id)}
-            className="flex w-full cursor-pointer items-center justify-between px-[12px] py-[10px]"
+            className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-left transition-colors"
           >
-            <div className="flex items-center gap-[12px]">
-              {item.icon}
+            <div className="flex items-center gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs">
+                {item.icon}
+              </div>
 
-              <span className="text-sm font-bold text-[#272729] md:text-lg dark:text-zinc-100">
+              <span className="text-xs sm:text-sm font-extrabold text-slate-800">
                 {item.title}
               </span>
             </div>
 
-            <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-              <ChevronDown className="size-5 text-neutral-400 md:size-[1.625rem] dark:text-zinc-600" />
+            <motion.div 
+              animate={{ rotate: isOpen ? 180 : 0 }}
+              transition={{ duration: 0.25 }}
+              className="w-7 h-7 rounded-full bg-slate-100/80 flex items-center justify-center text-slate-400 shrink-0 ml-2"
+            >
+              <ChevronDown className="w-4 h-4" />
             </motion.div>
           </button>
 
@@ -167,10 +81,10 @@ const AccordionItem: FC<AccordionItemProps> = ({
               height: isOpen ? bounds.height : 0,
               opacity: isOpen ? 1 : 0,
             }}
-            className="overflow-hidden will-change-transform"
+            className="overflow-hidden"
           >
             <div ref={ref}>
-              <div className="px-5 pb-5 text-xs font-medium text-[#545359] md:text-[18px] dark:text-zinc-400">
+              <div className="px-5 pb-5 pt-1 text-xs sm:text-sm font-medium text-slate-600 leading-relaxed pl-16">
                 {item.content}
               </div>
             </div>
@@ -182,15 +96,13 @@ const AccordionItem: FC<AccordionItemProps> = ({
 };
 
 export const AccordionApp: FC<AccordionProps> = ({ items }) => {
-  const defaultItems = items ?? DEFAULT_ITEMS;
-
+  const defaultItems = items ?? [];
   const [openId, setOpenId] = useState<number | null>(null);
-
   const openIndex = defaultItems.findIndex((item) => item.id === openId);
 
   return (
-    <div className="flex w-full flex-col items-center justify-center p-6 transition-colors duration-500">
-      <ul className="w-xs md:w-sm">
+    <div className="w-full flex flex-col items-center justify-center">
+      <ul className="w-full space-y-2.5 p-0 m-0">
         {defaultItems.map((item, index) => (
           <AccordionItem
             key={item.id}
