@@ -72,13 +72,14 @@ export const Header: React.FC = () => {
           )}
 
           <Link
-            href="/profile"
+            href="/upgrade"
             className="relative group overflow-hidden flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-sm hover:shadow-md transition-all"
           >
             <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
             <Sparkles className="w-4 h-4 text-orange-100" />
             <span>Try Pro</span>
           </Link>
+
         </div>
       </header>
     </div>
