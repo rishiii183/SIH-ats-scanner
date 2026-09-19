@@ -498,10 +498,14 @@ export default function ProfilePage() {
               </li>
             </ul>
 
-            <button className="w-full py-3 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md flex items-center justify-center gap-2 transition-all">
+            <Link 
+              href="/upgrade"
+              className="w-full py-3.5 px-4 rounded-xl text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+            >
               <span>Upgrade to SIH Pro (₹99)</span>
               <ArrowUpRight className="w-4 h-4" />
-            </button>
+            </Link>
+
           </div>
 
           {/* Detailed PPT Scan History Card */}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   Award, ShieldAlert, CheckCircle2, ChevronDown, ChevronUp, 
   Sparkles, RefreshCw, FileText, Lock, ArrowUpRight, Cpu, Target, Layers, Layout, Lightbulb, Download
@@ -272,10 +273,14 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
           </p>
         </div>
 
-        <button className="px-6 py-3.5 rounded-2xl font-bold text-xs sm:text-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg hover:shadow-orange-500/20 transition-all inline-flex items-center gap-2">
+        <Link 
+          href="/upgrade"
+          className="px-6 py-3.5 rounded-2xl font-bold text-xs sm:text-sm bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg hover:shadow-orange-500/20 transition-all inline-flex items-center gap-2 hover:scale-[1.02]"
+        >
           <span>Upgrade to SIH 2026 Pass (₹99)</span>
           <ArrowUpRight className="w-4 h-4" />
-        </button>
+        </Link>
+
       </div>
 
     </div>
