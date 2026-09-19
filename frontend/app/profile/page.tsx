@@ -376,7 +376,7 @@ export default function ProfilePage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your full name"
-                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm"
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-base sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm min-h-[44px]"
                     />
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                       value={college}
                       onChange={(e) => setCollege(e.target.value)}
                       placeholder="e.g. IIT Kharagpur / MAKAUT"
-                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm"
+                      className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-base sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm min-h-[44px]"
                     />
                   </div>
                 </div>

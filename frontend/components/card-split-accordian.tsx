@@ -54,9 +54,9 @@ const AccordionItem: FC<AccordionItemProps> = ({
           <button
             type="button"
             onClick={() => setOpenId(isOpen ? null : item.id)}
-            className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-left transition-colors"
+            className="flex w-full cursor-pointer items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 text-left transition-colors min-h-[44px]"
           >
-            <div className="flex items-center gap-3.5">
+            <div className="flex items-center gap-3 sm:gap-3.5">
               <div className="shrink-0 flex items-center justify-center">
                 {item.icon}
               </div>
@@ -70,9 +70,9 @@ const AccordionItem: FC<AccordionItemProps> = ({
             <motion.div 
               animate={{ rotate: isOpen ? 180 : 0 }}
               transition={{ duration: 0.25 }}
-              className="w-7 h-7 rounded-full bg-slate-100/80 flex items-center justify-center text-slate-400 shrink-0 ml-2"
+              className="w-7 h-7 rounded-full bg-slate-100/80 flex items-center justify-center text-slate-400 shrink-0 ml-2 min-h-[28px] min-w-[28px]"
             >
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-4 h-4 text-slate-600" />
             </motion.div>
           </button>
 
@@ -85,7 +85,7 @@ const AccordionItem: FC<AccordionItemProps> = ({
             className="overflow-hidden"
           >
             <div ref={ref}>
-              <div className="px-5 pb-5 pt-1 text-xs sm:text-sm font-medium text-slate-600 leading-relaxed pl-16">
+              <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-1 text-xs sm:text-sm font-medium text-slate-600 leading-relaxed pl-4 sm:pl-16">
                 {item.content}
               </div>
             </div>

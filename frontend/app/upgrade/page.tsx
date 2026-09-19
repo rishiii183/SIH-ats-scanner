@@ -259,7 +259,7 @@ export default function UpgradePage() {
             <button
               type="button"
               onClick={() => setPaymentMethod('upi')}
-              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${
+              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 min-h-[44px] ${
                 paymentMethod === 'upi' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
               }`}
             >
@@ -269,7 +269,7 @@ export default function UpgradePage() {
             <button
               type="button"
               onClick={() => setPaymentMethod('card')}
-              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 ${
+              className={`py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 min-h-[44px] ${
                 paymentMethod === 'card' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
               }`}
             >
@@ -300,7 +300,7 @@ export default function UpgradePage() {
                     placeholder="yourname@okhdfcbank or yourname@paytm"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm font-medium"
+                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm font-medium min-h-[44px]"
                   />
                 </div>
               </div>
@@ -311,7 +311,7 @@ export default function UpgradePage() {
                   <input
                     type="text"
                     placeholder="4532 •••• •••• 8921"
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm"
+                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm min-h-[44px]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -320,7 +320,7 @@ export default function UpgradePage() {
                     <input
                       type="text"
                       placeholder="08/28"
-                      className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm min-h-[44px]"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -329,7 +329,7 @@ export default function UpgradePage() {
                       type="password"
                       placeholder="•••"
                       maxLength={4}
-                      className="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm"
+                      className="w-full p-3 bg-white border border-slate-200 rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 shadow-sm min-h-[44px]"
                     />
                   </div>
                 </div>

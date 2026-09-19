@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import './globals.css';
 import { DisclaimerBanner } from './components/DisclaimerBanner';
@@ -11,6 +11,12 @@ import { organizationSchema } from './components/SeoSchemas';
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://sih-ats-scanner.vercel.app';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -80,14 +86,14 @@ export default function RootLayout({
           <DisclaimerBanner />
           <main className="flex-1">{children}</main>
           <footer className="w-full border-t border-slate-200 bg-white/60 py-8 px-4 text-center text-xs text-slate-500 space-y-4">
-            <div className="flex flex-wrap justify-center items-center gap-6 font-semibold text-slate-600">
-              <Link href="/" className="hover:text-orange-600 transition-colors">Home Scanner</Link>
-              <Link href="/guidelines" className="hover:text-orange-600 transition-colors">Format Guidelines & Checklist</Link>
-              <Link href="/faq" className="hover:text-orange-600 transition-colors">FAQ & Scoring Rules</Link>
-              <Link href="/upgrade" className="hover:text-orange-600 transition-colors">Pro Season Pass</Link>
+            <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-6 font-semibold text-slate-600">
+              <Link href="/" className="min-h-[44px] min-w-[44px] inline-flex items-center px-2 py-2 hover:text-orange-600 transition-colors">Home Scanner</Link>
+              <Link href="/guidelines" className="min-h-[44px] min-w-[44px] inline-flex items-center px-2 py-2 hover:text-orange-600 transition-colors">Format Guidelines & Checklist</Link>
+              <Link href="/faq" className="min-h-[44px] min-w-[44px] inline-flex items-center px-2 py-2 hover:text-orange-600 transition-colors">FAQ & Scoring Rules</Link>
+              <Link href="/upgrade" className="min-h-[44px] min-w-[44px] inline-flex items-center px-2 py-2 hover:text-orange-600 transition-colors">Pro Season Pass</Link>
             </div>
             <p>© 2026 SIH-ATS Scanner • Built for Smart India Hackathon Participants</p>
-            <p className="text-[11px] text-slate-400 max-w-xl mx-auto">
+            <p className="text-[11px] text-slate-400 max-w-xl mx-auto leading-normal px-2">
               SIH ATS Scanner is an independent educational tool. Not affiliated with, authorized, maintained, sponsored, or endorsed by AICTE or Ministry of Education, Government of India.
             </p>
           </footer>
@@ -96,3 +102,4 @@ export default function RootLayout({
     </html>
   );
 }
+

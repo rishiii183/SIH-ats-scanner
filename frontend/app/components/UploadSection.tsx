@@ -153,7 +153,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full flex items-center justify-between px-4 py-3.5 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl text-sm text-slate-800 shadow-sm hover:border-orange-300 hover:shadow-md transition-all focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 text-left group"
+                className="w-full flex items-center justify-between px-4 py-3.5 bg-white/90 backdrop-blur-md border border-slate-200 rounded-2xl text-sm text-slate-800 shadow-sm hover:border-orange-300 hover:shadow-md transition-all focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-400 text-left group min-h-[44px]"
               >
                 <div className="truncate pr-4 flex items-center gap-2.5">
                   {isCustomPs ? (
@@ -165,7 +165,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
                       <span className="font-black text-orange-500 bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-200 text-xs shrink-0">
                         {selectedProblem.ps_id}
                       </span>
-                      <span className="font-semibold text-slate-800 truncate">
+                      <span className="font-semibold text-slate-800 truncate text-xs sm:text-sm">
                         {selectedProblem.title}
                       </span>
                     </div>
@@ -191,26 +191,26 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
                         placeholder="Search PS ID, Theme, or Title..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20 transition-all shadow-sm"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20 transition-all shadow-sm"
                       />
                     </div>
                   </div>
 
-                  <div className="w-full max-h-72 overflow-y-auto space-y-1 p-2">
+                  <div className="w-full max-h-[50vh] overflow-y-auto space-y-1 p-2">
                     <div
                       onClick={() => {
                         setIsCustomPs(true);
                         setSelectedPsId('CUSTOM');
                         setIsDropdownOpen(false);
                       }}
-                      className={`p-3 rounded-xl cursor-pointer text-xs transition-all border ${
+                      className={`p-3.5 rounded-xl cursor-pointer text-xs transition-all border min-h-[44px] flex items-center ${
                         selectedPsId === 'CUSTOM'
                           ? 'bg-orange-50 border-orange-200 shadow-sm'
                           : 'border-transparent hover:bg-slate-50'
                       }`}
                     >
                       <div className="font-bold text-orange-600 flex items-center gap-2">
-                        <PlusCircle className="w-4 h-4" />
+                        <PlusCircle className="w-4 h-4 shrink-0" />
                         + Paste Custom / College Problem Statement
                       </div>
                     </div>
@@ -223,7 +223,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
                           setSelectedPsId(ps.id);
                           setIsDropdownOpen(false);
                         }}
-                        className={`p-3 rounded-xl cursor-pointer transition-all border ${
+                        className={`p-3.5 rounded-xl cursor-pointer transition-all border min-h-[44px] ${
                           selectedPsId === ps.id
                             ? 'bg-orange-50/90 border-orange-200 shadow-sm'
                             : 'border-transparent hover:bg-slate-50'
@@ -266,7 +266,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
                   placeholder="Type or paste your problem statement description here..."
                   value={customPsText}
                   onChange={(e) => setCustomPsText(e.target.value)}
-                  className="w-full p-3 bg-white border border-slate-200 shadow-sm rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full p-3 bg-white border border-slate-200 shadow-sm rounded-xl text-base sm:text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
             )}
@@ -291,7 +291,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-3xl p-8 sm:p-12 text-center transition-all cursor-pointer relative group ${
+              className={`border-2 border-dashed rounded-3xl p-6 sm:p-12 text-center transition-all cursor-pointer relative group ${
                 dragActive
                   ? 'border-orange-500 bg-orange-50/80 scale-[1.01] shadow-lg shadow-orange-500/10'
                   : file
@@ -312,27 +312,38 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
                     <CheckCircle2 className="w-7 h-7" />
                   </div>
                   <div className="space-y-0.5">
-                    <p className="font-bold text-slate-800 text-sm sm:text-base">{file.name}</p>
+                    <p className="font-bold text-slate-800 text-sm sm:text-base break-all">{file.name}</p>
                     <p className="text-xs font-medium text-emerald-600">
                       {(file.size / (1024 * 1024)).toFixed(2)} MB • File Ready for ATS Evaluation
                     </p>
                   </div>
-                  <span className="text-[11px] text-slate-400 underline pt-1 group-hover:text-slate-600">
-                    Click or drop another file to replace
-                  </span>
+                  <div className="mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm min-h-[44px]">
+                    <span>Tap to Change File</span>
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center gap-3.5">
-                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-orange-100 to-orange-50 flex items-center justify-center text-orange-500 border border-orange-200/80 shadow-sm group-hover:scale-110 group-hover:text-orange-600 transition-all">
-                    <UploadCloud className="w-8 h-8" />
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-gradient-to-tr from-orange-100 to-orange-50 flex items-center justify-center text-orange-500 border border-orange-200/80 shadow-sm group-hover:scale-110 group-hover:text-orange-600 transition-all">
+                    <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8" />
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <p className="text-sm sm:text-base font-bold text-slate-800">
-                      Drag & drop your presentation here, or{' '}
-                      <span className="text-orange-600 underline underline-offset-2 hover:text-orange-700">browse</span>
+                      Upload your presentation file
                     </p>
-                    <p className="text-xs text-slate-500">
-                      Accepted formats: <strong className="text-slate-700 font-semibold">PPTX</strong> (PowerPoint) and <strong className="text-slate-700 font-semibold">PDF</strong>
+                    <p className="text-xs text-slate-500 hidden sm:block">
+                      Drag & drop your file here or browse from your device (.pptx / .pdf)
+                    </p>
+
+                    {/* Touch-Friendly Primary Button Target */}
+                    <div className="pt-1">
+                      <span className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-md transition-transform group-hover:scale-105 min-h-[44px]">
+                        <UploadCloud className="w-4 h-4" />
+                        <span>Choose File from Device</span>
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-400 pt-1">
+                      Accepted formats: <strong className="text-slate-600">PPTX</strong> (PowerPoint) or <strong className="text-slate-600">PDF</strong> (Max 25MB)
                     </p>
                   </div>
                 </div>
@@ -352,7 +363,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
           <button
             type="submit"
             disabled={!file}
-            className={`w-full py-4 px-6 rounded-2xl font-bold text-sm sm:text-base shadow-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
+            className={`w-full min-h-[48px] py-4 px-6 rounded-2xl font-bold text-sm sm:text-base shadow-xl transition-all flex items-center justify-center gap-3 relative overflow-hidden group ${
               file
                 ? 'bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-orange-500/25 cursor-pointer hover:shadow-2xl hover:scale-[1.01]'
                 : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none'
@@ -361,10 +372,11 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
             {file && (
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
             )}
-            <FileText className="w-5 h-5" />
-            <span>Scan & Evaluate Deck Against SIH Rubric</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <FileText className="w-5 h-5 shrink-0" />
+            <span className="truncate">Scan & Evaluate Deck Against SIH Rubric</span>
+            <ArrowRight className="w-4 h-4 shrink-0 group-hover:translate-x-1 transition-transform" />
           </button>
+
         </form>
 
         {/* Guidelines / Accordion Section */}

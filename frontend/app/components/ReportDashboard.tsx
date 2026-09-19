@@ -104,7 +104,7 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
 
         {/* Score Ring Radial Gauge */}
         <div className="flex flex-col items-center shrink-0 relative z-10">
-          <div className="relative w-40 h-40 flex items-center justify-center">
+          <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" className="text-slate-100/90" fill="transparent" />
               <circle
@@ -123,8 +123,8 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
               />
             </svg>
             <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-4xl font-black tracking-tight text-slate-900">{overall_score}</span>
-              <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Out of 100</span>
+              <span className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">{overall_score}</span>
+              <span className="text-[9px] sm:text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Out of 100</span>
             </div>
           </div>
           <span className={`mt-3 px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider border shadow-sm ${getScoreColor(overall_score)}`}>
@@ -135,8 +135,8 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
 
       {/* 5 Category Breakdown Cards */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
             <span>Category Breakdown & Jury Rubric Audit</span>
           </h3>
           <span className="text-xs font-semibold text-slate-400">Click card to expand slide citations</span>
@@ -155,16 +155,18 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
               >
                 <div
                   onClick={() => toggleCategory(cat.key)}
-                  className="p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50/70 transition-colors"
+                  className="p-4 sm:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50/70 transition-colors min-h-[56px] select-none"
+                  role="button"
+                  aria-expanded={isExpanded}
                 >
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-orange-100 to-orange-50 border border-orange-200/80 flex items-center justify-center text-orange-600 shrink-0 shadow-sm">
-                      <Icon className="w-5 h-5" />
+                  <div className="flex items-center gap-3 sm:gap-3.5 pr-2">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-orange-100 to-orange-50 border border-orange-200/80 flex items-center justify-center text-orange-600 shrink-0 shadow-sm">
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-extrabold text-sm sm:text-base text-slate-900">{cat.title}</span>
-                        <span className="text-[10px] text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full font-bold">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className="font-extrabold text-sm sm:text-base text-slate-900 leading-snug">{cat.title}</span>
+                        <span className="text-[10px] text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full font-bold shrink-0">
                           {Math.round(cat.detail.weight * 100)}% Weight
                         </span>
                       </div>
@@ -174,54 +176,54 @@ export const ReportDashboard: React.FC<ReportDashboardProps> = ({ report, onRese
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                     <div className="text-right">
-                      <span className={`text-lg sm:text-xl font-black ${
+                      <span className={`text-base sm:text-xl font-black ${
                         catScore >= 85 ? 'text-emerald-600' : catScore >= 70 ? 'text-amber-600' : 'text-red-500'
                       }`}>
                         {catScore}
                       </span>
                       <span className="text-xs text-slate-400 font-bold">/100</span>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    <div className="w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 min-h-[36px] min-w-[36px]">
+                      {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-600" /> : <ChevronDown className="w-4 h-4 text-slate-600" />}
                     </div>
                   </div>
                 </div>
 
                 {/* Expanded Details Drawer */}
                 {isExpanded && (
-                  <div className="px-5 pb-5 pt-3 border-t border-slate-100 bg-slate-50/60 space-y-3 text-xs animate-in fade-in duration-200">
+                  <div className="px-4 sm:px-5 pb-5 pt-3 border-t border-slate-100 bg-slate-50/60 space-y-3 text-xs animate-in fade-in duration-200">
                     <div className="font-bold text-slate-700 uppercase tracking-wider text-[10px]">
                       Jury Deductions & Official Rubric Citations:
                     </div>
                     {cat.detail.reasons.map((reason, rIdx) => (
                       <div
                         key={rIdx}
-                        className={`p-4 rounded-2xl border space-y-2 shadow-sm ${
+                        className={`p-3.5 sm:p-4 rounded-2xl border space-y-2 shadow-sm ${
                           reason.deduction > 0
                             ? 'bg-red-50/90 border-red-200 text-red-900'
                             : 'bg-emerald-50/90 border-emerald-200 text-emerald-900'
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-2 font-semibold">
+                        <div className="flex items-start justify-between gap-2.5">
+                          <div className="flex items-start gap-2 font-semibold break-words min-w-0 flex-1">
                             {reason.deduction > 0 ? (
-                              <ShieldAlert className="w-4 h-4 text-red-500 shrink-0" />
+                              <ShieldAlert className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                             ) : (
-                              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                             )}
-                            <span className="text-xs leading-relaxed">{reason.message}</span>
+                            <span className="text-xs leading-relaxed break-words">{reason.message}</span>
                           </div>
                           {reason.deduction > 0 && (
-                            <span className="px-2.5 py-1 rounded-full bg-red-100 border border-red-200 text-red-700 text-[10px] font-black shrink-0 shadow-xs">
+                            <span className="px-2 py-0.5 rounded-full bg-red-100 border border-red-200 text-red-700 text-[10px] font-black shrink-0 shadow-xs">
                               -{reason.deduction} pts
                             </span>
                           )}
                         </div>
 
                         {reason.cited_source && (
-                          <div className="text-[11px] text-slate-600 italic pl-4 border-l-2 border-slate-300">
+                          <div className="text-[11px] text-slate-600 italic pl-3 border-l-2 border-slate-300 break-words overflow-hidden text-wrap">
                             <strong>Source Citation:</strong> "{reason.cited_source}"
                           </div>
                         )}

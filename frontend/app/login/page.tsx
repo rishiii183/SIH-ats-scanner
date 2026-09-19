@@ -148,7 +148,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setIsSignUp(false); setError(null); setSuccess(null); }}
-                className={`py-2 rounded-xl transition-all ${
+                className={`py-2.5 rounded-xl transition-all min-h-[44px] flex items-center justify-center ${
                   !isSignUp 
                     ? 'bg-white text-slate-900 shadow-sm font-bold' 
                     : 'hover:text-slate-900 text-slate-500'
@@ -159,7 +159,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setIsSignUp(true); setError(null); setSuccess(null); }}
-                className={`py-2 rounded-xl transition-all ${
+                className={`py-2.5 rounded-xl transition-all min-h-[44px] flex items-center justify-center ${
                   isSignUp 
                     ? 'bg-white text-slate-900 shadow-sm font-bold' 
                     : 'hover:text-slate-900 text-slate-500'
@@ -190,7 +190,7 @@ export default function LoginPage() {
             type="button" 
             onClick={handleGoogleLogin} 
             disabled={googleLoading || loading}
-            className="w-full relative group overflow-hidden flex items-center justify-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all disabled:opacity-60"
+            className="w-full relative group overflow-hidden flex items-center justify-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all disabled:opacity-60 min-h-[44px]"
           >
             {googleLoading ? (
               <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
@@ -237,7 +237,7 @@ export default function LoginPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name"
-                    className="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400"
+                    className="w-full bg-white border border-slate-200 text-slate-800 text-base sm:text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400 min-h-[44px]"
                   />
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
-                  className="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400"
+                  className="w-full bg-white border border-slate-200 text-slate-800 text-base sm:text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between pl-1">
                 <label className="text-xs font-semibold text-slate-700">Password</label>
                 {!isSignUp && (
-                  <a href="#" className="text-xs font-medium text-orange-600 hover:text-orange-700 transition-colors">
+                  <a href="#" className="text-xs font-medium text-orange-600 hover:text-orange-700 transition-colors p-1">
                     Forgot password?
                   </a>
                 )}
@@ -277,7 +277,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400"
+                  className="w-full bg-white border border-slate-200 text-slate-800 text-base sm:text-sm rounded-xl px-10 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-slate-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function LoginPage() {
             <button 
               type="submit" 
               disabled={loading || googleLoading}
-              className="w-full relative group overflow-hidden flex items-center justify-center gap-2 px-5 py-3.5 mt-2 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all disabled:opacity-60"
+              className="w-full relative group overflow-hidden flex items-center justify-center gap-2 px-5 py-3.5 mt-2 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-md transition-all disabled:opacity-60 min-h-[44px]"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
