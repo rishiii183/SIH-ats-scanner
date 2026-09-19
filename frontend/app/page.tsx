@@ -138,7 +138,8 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        throw new Error('Upload failed. Please check file format.');
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Upload failed. Please check file format.');
       }
 
       const data = await res.json();

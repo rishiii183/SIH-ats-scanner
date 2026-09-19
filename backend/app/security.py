@@ -121,9 +121,11 @@ def validate_zip_safety(file_bytes: bytes):
             detail="Corrupted or invalid PPTX file structure."
         )
 
-# Disallowed suspicious PDF malware triggers (OS execution & active droppers)
+# Disallowed suspicious PDF malware triggers
 DANGEROUS_PDF_TOKENS = [
     (b"/Launch", "Disallowed external OS execution action (/Launch)"),
+    (b"/JavaScript", "Disallowed executable embedded script (/JavaScript)"),
+    (b"/EmbeddedFiles", "Disallowed embedded hidden payload dropper (/EmbeddedFiles)"),
     (b"/RichMedia", "Disallowed legacy Flash/RichMedia active content"),
     (b"/XFA", "Disallowed dynamic XML Forms Architecture exploit vector"),
 ]
@@ -189,11 +191,12 @@ async def validate_uploaded_file(file: UploadFile) -> Tuple[str, str, bytes]:
             detail=f"File exceeds maximum allowed size of {settings.MAX_UPLOAD_SIZE_MB}MB."
         )
     
-    # Magic bytes verification
+    # Magic bytes verification (allowing leading bytes/BOM in first 1024 bytes per ISO PDF spec)
     is_valid_magic = False
     signatures = MAGIC_SIGNATURES.get(ext, [])
+    file_head = content[:1024]
     for sig in signatures:
-        if content.startswith(sig):
+        if sig in file_head:
             is_valid_magic = True
             break
             
