@@ -42,6 +42,13 @@ def process_submission_pipeline(sub_id: str, file_path: str, file_type: str, ps_
 
     except Exception as e:
         DBManager.update_submission_status(sub_id, "failed", f"Processing error: {str(e)}", 0)
+    finally:
+        # Purge temporary local file so user uploads are never retained on server/local disk
+        try:
+            if file_path and os.path.exists(file_path):
+                os.remove(file_path)
+        except Exception:
+            pass
 
 @router.post("/upload")
 async def upload_submission(
