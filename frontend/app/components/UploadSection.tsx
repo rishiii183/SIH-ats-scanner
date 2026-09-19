@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { UploadCloud, FileText, CheckCircle2, Search, AlertCircle, PlusCircle, HelpCircle, ChevronDown, ChevronUp, Sparkles, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { AccordionApp } from '@/components/card-split-accordian';
+import { Animated3DIcon } from './Animated3DIcon';
+
 
 interface ProblemStatement {
   id: string;
@@ -375,22 +377,23 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
             { 
               id: 1, 
               title: 'What is the official SIH 2026 Slide Cap?', 
-              icon: <ShieldCheck className="w-5 h-5 text-orange-500" />, 
+              icon: <Animated3DIcon variant="shield" size="sm" />, 
               content: 'The official SIH Idea Presentation format permits a maximum of 6 slides. Decks exceeding 6 slides receive automated penalty deductions in preliminary jury screening.' 
             },
             { 
               id: 2, 
               title: 'What mandatory slides must be included?', 
-              icon: <CheckCircle2 className="w-5 h-5 text-emerald-500" />, 
+              icon: <Animated3DIcon variant="check" size="sm" />, 
               content: '1. Title & Team, 2. Problem Statement & Background, 3. Proposed Solution, 4. Technical Approach / Architecture, 5. Impact & Feasibility, 6. References & Team Details.' 
             },
             { 
               id: 3, 
               title: 'How does our AI evaluate technical feasibility?', 
-              icon: <Zap className="w-5 h-5 text-amber-500" />, 
+              icon: <Animated3DIcon variant="zap" size="sm" />, 
               content: 'Our ATS checks for explicit technology stacks (frameworks, databases, ML models, hardware controllers) and architecture flowcharts rather than vague buzzwords.' 
             }
           ]} />
+
         </div>
 
       </div>

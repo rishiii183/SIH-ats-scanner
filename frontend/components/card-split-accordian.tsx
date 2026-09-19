@@ -57,7 +57,7 @@ const AccordionItem: FC<AccordionItemProps> = ({
             className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-left transition-colors"
           >
             <div className="flex items-center gap-3.5">
-              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shrink-0 shadow-xs">
+              <div className="shrink-0 flex items-center justify-center">
                 {item.icon}
               </div>
 
@@ -65,6 +65,7 @@ const AccordionItem: FC<AccordionItemProps> = ({
                 {item.title}
               </span>
             </div>
+
 
             <motion.div 
               animate={{ rotate: isOpen ? 180 : 0 }}
