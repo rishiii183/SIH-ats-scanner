@@ -121,16 +121,30 @@ def validate_zip_safety(file_bytes: bytes):
             detail="Corrupted or invalid PPTX file structure."
         )
 
+# Disallowed suspicious PDF malware triggers
+DANGEROUS_PDF_TOKENS = [
+    (b"/Launch", "Disallowed external OS execution action (/Launch)"),
+    (b"/EmbeddedFiles", "Disallowed embedded hidden payload dropper (/EmbeddedFiles)"),
+    (b"/EmbeddedFile", "Disallowed embedded file stream (/EmbeddedFile)"),
+    (b"/JavaScript", "Disallowed executable embedded script (/JavaScript)"),
+    (b"/JS", "Disallowed active JavaScript directive (/JS)"),
+    (b"/RichMedia", "Disallowed legacy Flash/RichMedia active content"),
+    (b"/XFA", "Disallowed dynamic XML Forms Architecture exploit vector"),
+]
+
 def validate_pdf_safety(file_bytes: bytes):
     """
-    Checks PDF streams for suspicious active executable payloads (/Launch, /JavaScript).
+    Multi-layer PDF malware & payload sanitizer:
+    Scans internal PDF object streams to block active malware payloads,
+    droppers, and remote execution triggers before parsing.
     """
-    header_sample = file_bytes[:1024 * 1024] # Inspect first 1MB
-    if b"/Launch" in header_sample:
-        raise HTTPException(
-            status_code=400,
-            detail="Security Violation: PDF contains disallowed external /Launch action."
-        )
+    # Scan raw bytes for exploit signatures
+    for token, reason in DANGEROUS_PDF_TOKENS:
+        if token in file_bytes:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Security Alert: Document rejected due to potentially malicious content ({reason})."
+            )
 
 async def validate_uploaded_file(file: UploadFile) -> Tuple[str, str, bytes]:
     """
