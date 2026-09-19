@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 import { 
   Check, Sparkles, ShieldCheck, Zap, ArrowLeft, 
   CreditCard, QrCode, Lock, CheckCircle2, ArrowRight, 
-  HelpCircle, Star, Award, Layers, Cpu, Flame, Loader2 
+  HelpCircle, Star, Award, Layers, Cpu, Flame, Loader2, AlertCircle 
 } from 'lucide-react';
+
 import { supabase } from '@/lib/supabase';
 import { Header } from '../components/Header';
 

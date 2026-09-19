@@ -179,8 +179,10 @@ export default function ProfilePage() {
     : null;
 
   const usedQuota = isPro ? totalScans : Math.min(totalScans, FREE_SCAN_LIMIT);
-  const remainingQuota = isPro ? 'Unlimited' : Math.max(0, FREE_SCAN_LIMIT - totalScans);
+  const remainingCount = Math.max(0, FREE_SCAN_LIMIT - totalScans);
+  const remainingQuota = isPro ? 'Unlimited' : remainingCount;
   const usagePercentage = isPro ? 100 : Math.min(100, Math.round((totalScans / FREE_SCAN_LIMIT) * 100));
+
 
   const joinDate = userData?.created_at 
     ? new Date(userData.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -462,10 +464,11 @@ export default function ProfilePage() {
               <p className="text-[11px] text-slate-400 font-medium">
                 {isPro 
                   ? 'Unlimited evaluations enabled for SIH 2026' 
-                  : remainingQuota > 0 
-                  ? `${remainingQuota} free scan${remainingQuota !== 1 ? 's' : ''} remaining in your account`
+                  : remainingCount > 0 
+                  ? `${remainingCount} free scan${remainingCount !== 1 ? 's' : ''} remaining in your account`
                   : 'Free limit reached. Upgrade for unlimited re-scans.'}
               </p>
+
             </div>
 
             {/* Pro Upgrade Promotion */}
