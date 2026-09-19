@@ -301,7 +301,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({ onStartUpload }) =
             >
               <input
                 type="file"
-                accept=".pptx,.pdf"
+                accept=".pptx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-powerpoint"
                 onChange={handleFileChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
               />

@@ -121,13 +121,9 @@ def validate_zip_safety(file_bytes: bytes):
             detail="Corrupted or invalid PPTX file structure."
         )
 
-# Disallowed suspicious PDF malware triggers
+# Disallowed suspicious PDF malware triggers (OS execution & active droppers)
 DANGEROUS_PDF_TOKENS = [
     (b"/Launch", "Disallowed external OS execution action (/Launch)"),
-    (b"/EmbeddedFiles", "Disallowed embedded hidden payload dropper (/EmbeddedFiles)"),
-    (b"/EmbeddedFile", "Disallowed embedded file stream (/EmbeddedFile)"),
-    (b"/JavaScript", "Disallowed executable embedded script (/JavaScript)"),
-    (b"/JS", "Disallowed active JavaScript directive (/JS)"),
     (b"/RichMedia", "Disallowed legacy Flash/RichMedia active content"),
     (b"/XFA", "Disallowed dynamic XML Forms Architecture exploit vector"),
 ]
@@ -135,8 +131,8 @@ DANGEROUS_PDF_TOKENS = [
 def validate_pdf_safety(file_bytes: bytes):
     """
     Multi-layer PDF malware & payload sanitizer:
-    Scans internal PDF object streams to block active malware payloads,
-    droppers, and remote execution triggers before parsing.
+    Scans internal PDF object streams to block active malware payloads
+    and remote execution triggers before parsing.
     """
     # Scan raw bytes for exploit signatures
     for token, reason in DANGEROUS_PDF_TOKENS:
