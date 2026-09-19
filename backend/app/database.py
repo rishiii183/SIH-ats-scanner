@@ -57,7 +57,64 @@ class DBManager:
         return f"local://{filename}"
 
     # ==========================================
-    # 2. PROBLEM STATEMENTS
+    # 2. RUBRIC CONFIGS & CORPUS
+    # ==========================================
+    @classmethod
+    def get_active_rubric_config(cls, year: int = 2026) -> Dict[str, Any]:
+        """
+        Reads active rubric configuration directly from Supabase 'rubric_configs' table.
+        """
+        client = cls.get_client()
+        if client:
+            try:
+                res = client.table("rubric_configs").select("*").eq("year", year).eq("status", "active").limit(1).execute()
+                if res.data and len(res.data) > 0:
+                    return res.data[0]
+            except Exception as e:
+                print(f"Supabase fetch rubric_configs error: {e}")
+
+        # Fallback baseline configuration for SIH 2026
+        return {
+            "id": "cdbb77e8-ee1c-41bc-b780-af3395c5f706",
+            "year": 2026,
+            "status": "active",
+            "max_slides": 6,
+            "allowed_file_types": ["pdf", "pptx"],
+            "max_file_size_mb": 25,
+            "required_sections": [
+                {"name": "Title Slide", "keywords": ["title", "team", "ps", "problem statement", "theme"]},
+                {"name": "Problem Statement", "keywords": ["problem", "challenge", "background", "need", "issue"]},
+                {"name": "Proposed Solution", "keywords": ["solution", "approach", "idea", "innovation", "proposed"]},
+                {"name": "Technical Approach", "keywords": ["tech stack", "architecture", "technology", "feasibility", "implementation", "methodology"]},
+                {"name": "Impact & Benefits", "keywords": ["impact", "benefits", "scalability", "outcomes", "social", "economic"]},
+                {"name": "References & Team", "keywords": ["references", "team", "members", "contact", "mentor"]}
+            ],
+            "category_weights": {
+                "structure_format": 0.15,
+                "ps_alignment": 0.20,
+                "technical_depth": 0.30,
+                "originality": 0.20,
+                "clarity": 0.15
+            },
+            "source_doc_text": "Official SIH 2026 Idea Presentation Format: Maximum 6 slides."
+        }
+
+    @classmethod
+    def get_corpus_count(cls) -> int:
+        """
+        Checks row count of 'corpus_documents' table in Supabase.
+        """
+        client = cls.get_client()
+        if client:
+            try:
+                res = client.table("corpus_documents").select("count", count="exact").execute()
+                return res.count or 0
+            except Exception:
+                return 0
+        return 0
+
+    # ==========================================
+    # 3. PROBLEM STATEMENTS
     # ==========================================
     @classmethod
     def get_problem_statements(cls, query: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -231,17 +288,19 @@ class DBManager:
                 }
                 client.table("reports").upsert(report_payload, on_conflict="submission_id").execute()
 
-                # 2. Save individual category scores
+                # 2. Save individual category scores (only for active available categories)
                 breakdown = report_data.get("category_breakdown", {})
                 for cat_key, cat_val in breakdown.items():
-                    score_payload = {
-                        "submission_id": sub_id,
-                        "category": cat_key,
-                        "raw_score": cat_val.get("score", 0),
-                        "weight_applied": cat_val.get("weight", 0.2),
-                        "reasons": cat_val.get("reasons", [])
-                    }
-                    client.table("scores").insert(score_payload).execute()
+                    if cat_val.get("status") == "available" and cat_val.get("score") is not None:
+                        score_payload = {
+                            "submission_id": sub_id,
+                            "category": cat_key,
+                            "raw_score": cat_val.get("score", 0),
+                            "weight_applied": cat_val.get("weight_applied", cat_val.get("weight", 0.2)),
+                            "reasons": cat_val.get("reasons", [])
+                        }
+                        client.table("scores").insert(score_payload).execute()
+
             except Exception as e:
                 print(f"Supabase save report & scores error: {e}")
 

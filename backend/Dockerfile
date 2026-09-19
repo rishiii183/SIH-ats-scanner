@@ -36,5 +36,6 @@ USER appuser
 
 EXPOSE 8000
 
-# Run with Gunicorn + Uvicorn workers for high concurrency
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--timeout", "120", "app.main:app"]
+# Run with Gunicorn + Uvicorn worker (1 worker for 512MB free-tier memory limit)
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--timeout", "120", "app.main:app"]
+

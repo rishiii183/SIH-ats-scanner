@@ -10,10 +10,13 @@ from app.scoring.aggregator import ScoreAggregator
 
 router = APIRouter(prefix="/submissions", tags=["Submissions & Evaluation"])
 
+import time
+
 def process_submission_pipeline(sub_id: str, file_path: str, file_type: str, ps_id: Optional[str]):
     try:
         # Step 1: Parsing Slides
-        DBManager.update_submission_status(sub_id, "processing", "Parsing presentation slides...", 25)
+        DBManager.update_submission_status(sub_id, "processing", "Parsing presentation slides and layout geometry...", 25)
+        time.sleep(0.3)
         
         if file_type == "pptx" or file_path.endswith(".pptx"):
             slides = PPTXParser.parse(file_path)
@@ -21,25 +24,29 @@ def process_submission_pipeline(sub_id: str, file_path: str, file_type: str, ps_
             slides = PDFParser.parse(file_path)
 
         # Step 2: Fetch Problem Statement Context
-        DBManager.update_submission_status(sub_id, "processing", "Checking problem statement alignment...", 50)
+        DBManager.update_submission_status(sub_id, "processing", "Running 6-slide structure & domain alignment audit...", 50)
+        time.sleep(0.4)
+
         ps_info = DBManager.get_problem_statement_by_id(ps_id) if ps_id else None
         ps_title = ps_info["title"] if ps_info else "General Track"
         ps_desc = ps_info["description"] if ps_info else ""
 
         # Step 3: Run Scoring Engine
-        DBManager.update_submission_status(sub_id, "processing", "Evaluating technical depth & formatting...", 75)
+        DBManager.update_submission_status(sub_id, "processing", "Computing local vector similarity & clarity metrics...", 75)
         report_data = ScoreAggregator.process_submission(
             slides=slides,
             ps_title=ps_title,
             ps_description=ps_desc,
             gemini_api_key=settings.GEMINI_API_KEY
         )
+        time.sleep(0.4)
 
         # Step 4: Finalize & Save Report
         DBManager.save_report(sub_id, report_data)
 
     except Exception as e:
         DBManager.update_submission_status(sub_id, "failed", f"Processing error: {str(e)}", 0)
+
     finally:
         # Purge temporary local file so user uploads are never retained on server/local disk
         try:

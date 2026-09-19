@@ -31,8 +31,13 @@ export default function Home() {
           setProgressPct(data.progress_pct || 50);
 
           if (data.status === 'completed') {
-            setStatus('completed');
-            fetchReport(submissionId);
+            // Smoothly complete progress bar sweep before presenting report dashboard
+            setProgressPct(100);
+            setProgressMsg('Evaluation complete! Finalizing report dashboard...');
+            setTimeout(() => {
+              setStatus('completed');
+              fetchReport(submissionId);
+            }, 700);
           } else if (data.status === 'failed') {
             setStatus('failed');
             setErrorMsg(data.error_message || 'Evaluation failed. Please try again.');
@@ -41,10 +46,11 @@ export default function Home() {
       } catch (err) {
         console.error('Status poll error', err);
       }
-    }, 1500);
+    }, 400);
 
     return () => clearInterval(interval);
   }, [submissionId, status]);
+
 
   const fetchReport = async (subId: string) => {
     try {

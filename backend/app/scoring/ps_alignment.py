@@ -92,7 +92,9 @@ class PSAlignmentScorer:
             })
 
         return {
+            "status": "available",
             "score": round(score, 1),
             "similarity_score": round(float(similarity), 3),
             "reasons": reasons
         }
+

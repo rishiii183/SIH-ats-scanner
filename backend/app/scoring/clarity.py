@@ -79,7 +79,9 @@ class ClarityScorer:
             })
 
         return {
+            "status": "available",
             "score": round(final_score, 1),
             "reasons": reasons,
             "avg_words_per_slide": round(avg_words_per_slide, 1)
         }
+
